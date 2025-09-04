@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,11 +34,13 @@ import com.example.cookit.R
 import com.example.cookit.data.models.RegisterRequest
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.RetrofitInstance
+import com.example.cookit.data.utils.PrefManager
 import com.example.cookit.ui.screens.auth.AuthViewModel
 import com.example.cookit.ui.screens.auth.AuthViewModelFactory
+import com.example.cookit.ui.screens.model.AuthUiState
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
     val repository = AuthRepository(RetrofitInstance.api)
     val viewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(repository)
@@ -53,6 +57,26 @@ fun RegistrationScreen() {
     var usernameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
+
+    val uiState = viewModel.uiState
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is AuthUiState.Success -> {
+                val prefManager = PrefManager.getInstance(context)
+                prefManager.saveToken(uiState.registerResponse.token)
+                prefManager.saveUserName(uiState.registerResponse.user.name)
+
+                onRegistrationSuccess
+            }
+
+            is AuthUiState.Error -> {
+
+            }
+
+            else -> Unit
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -129,7 +153,7 @@ fun RegistrationScreen() {
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        imageVector =  Icons.Filled.Lock,
+                        imageVector = Icons.Filled.Lock,
                         contentDescription = "Toggle password"
                     )
                 }
@@ -177,6 +201,13 @@ fun RegistrationScreen() {
             )
         ) {
             Text("Register")
+        }
+        if (uiState is AuthUiState.Error) {
+            Text(
+                text = uiState.message,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
