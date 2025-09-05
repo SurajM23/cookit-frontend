@@ -115,7 +115,8 @@ fun SplashScreen(
                         blurRadius = 4f
                     )
                 ),
-                color = MaterialTheme.colorScheme.primary,
+//                color = MaterialTheme.colorScheme.primary,
+                color = Color.Red,
                 modifier = Modifier
                     .graphicsLayer {
                         this.alpha = alpha
