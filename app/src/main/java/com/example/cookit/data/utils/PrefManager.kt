@@ -8,6 +8,9 @@ class PrefManager(context: Context) {
         private const val PREF_NAME = "cookit_prefs"
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_USER_NAME = "user_name"
+        private const val KEY_USER_ID = "user_name"
+        private const val KEY_USER_EMAIL = "user_name"
+
         @Volatile
         private var INSTANCE: PrefManager? = null
 
@@ -28,13 +31,17 @@ class PrefManager(context: Context) {
 
     fun getToken(): String? = prefs.getString(KEY_TOKEN, null)
 
-    fun clearToken() {
-        prefs.edit().remove(KEY_TOKEN).apply()
-    }
-
     // User Name
     fun saveUserName(name: String) {
         prefs.edit().putString(KEY_USER_NAME, name).apply()
+    }
+
+    fun saveUserId(name: String) {
+        prefs.edit().putString(KEY_USER_ID, name).apply()
+    }
+
+    fun saveUserEmail(name: String) {
+        prefs.edit().putString(KEY_USER_EMAIL, name).apply()
     }
 
     fun getUserName(): String? = prefs.getString(KEY_USER_NAME, null)

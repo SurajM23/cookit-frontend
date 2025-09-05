@@ -66,7 +66,8 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
                 val prefManager = PrefManager.getInstance(context)
                 prefManager.saveToken(uiState.registerResponse.token)
                 prefManager.saveUserName(uiState.registerResponse.user.name)
-
+                prefManager.saveUserId(uiState.registerResponse.user.id)
+                prefManager.saveUserEmail(uiState.registerResponse.user.email)
                 onRegistrationSuccess
             }
 
