@@ -1,9 +1,6 @@
-package com.example.cookit.ui.screens.auth
+package com.example.cookit.ui.screens.auth.screens
 
-import android.R.style.Theme
-import android.app.ProgressDialog.show
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

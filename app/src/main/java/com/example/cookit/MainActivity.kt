@@ -8,9 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cookit.ui.screens.auth.SplashScreen
+import com.example.cookit.ui.screens.auth.screens.SplashScreen
 import com.example.cookit.ui.screens.auth.screens.LoginScreen
-import com.example.cookit.ui.screens.home.HomeScreen
+import com.example.cookit.ui.screens.home.screen.HomeScreen
 import com.example.cookit.ui.theme.CookITTheme
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
