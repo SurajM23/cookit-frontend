@@ -18,6 +18,7 @@ runtimeLivedata = "1.9.0"
 hiltVersion = "2.51.1"
 hiltNavigationVersion = "1.2.0"
 animationCoreLint = "1.9.0"
+foundation = "1.9.0"
 
 [libraries]
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
@@ -47,6 +48,7 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltVersion" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
 androidx-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -67,10 +67,10 @@ fun SplashScreen(
 
     // Splash screen delay and logic
     LaunchedEffect(Unit) {
-        delay(1000) // Short delay before showing the app name
+//        delay(1000) // Short delay before showing the app name
         show = true
 
-        delay(3000) // Wait 3 more seconds (total 4s)
+//        delay(3000) // Wait 3 more seconds (total 4s)
         val prefs = PrefManager.getInstance(context)
         val token = prefs.getToken()
         val userId = prefs.getUserId()
