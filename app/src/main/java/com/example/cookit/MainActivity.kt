@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cookit.ui.screens.auth.screens.LoginScreen
 import com.example.cookit.ui.screens.home.HomeScreen
 import com.example.cookit.ui.theme.CookITTheme
 
@@ -18,14 +19,30 @@ class MainActivity : ComponentActivity() {
         setContent {
             CookITTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "registration") {
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(
+                            context = this@MainActivity,
+                            onLoginSuccess = {
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            },
+                            onNavigateToRegister = {
+                                navController.navigate("registration")
+                            }
+                        )
+                    }
                     composable("registration") {
                         RegistrationScreen(
-                            this@MainActivity,
+                            context = this@MainActivity,
                             onRegistrationSuccess = {
                                 navController.navigate("home") {
                                     popUpTo("registration") { inclusive = true }
                                 }
+                            },
+                            onNavigateBack = {
+                                navController.popBackStack()
                             }
                         )
                     }

@@ -1,7 +1,7 @@
-package com.example.cookit.data.models
+package com.example.cookit.ui.screens.auth.models
 
 
-data class RegisterResponse(
+data class AuthResponse(
     val message: String,
     val token: String,
     val user: User

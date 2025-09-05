@@ -1,3 +1,5 @@
+package com.example.cookit.ui.screens.auth.screens
+
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,48 +34,46 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cookit.R
-import com.example.cookit.data.models.RegisterRequest
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.data.utils.PrefManager
-import com.example.cookit.ui.screens.auth.AuthViewModel
-import com.example.cookit.ui.screens.auth.AuthViewModelFactory
+import com.example.cookit.ui.screens.auth.models.LoginRequest
+import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
+import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
 import com.example.cookit.ui.screens.model.AuthUiState
 
 @Composable
-fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
+fun LoginScreen(
+    context: Context,
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit
+) {
     val repository = AuthRepository(RetrofitInstance.api)
-    val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(repository)
-    )
-
-    var name by remember { mutableStateOf("") }
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository))
     var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-
-    // Error states
     var nameError by remember { mutableStateOf<String?>(null) }
-    var usernameError by remember { mutableStateOf<String?>(null) }
-    var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
-
     val uiState = viewModel.uiState
 
     LaunchedEffect(uiState) {
         when (uiState) {
             is AuthUiState.Success -> {
                 val prefManager = PrefManager.getInstance(context)
-                prefManager.saveToken(uiState.registerResponse.token)
-                prefManager.saveUserName(uiState.registerResponse.user.name)
-                prefManager.saveUserId(uiState.registerResponse.user.id)
-                prefManager.saveUserEmail(uiState.registerResponse.user.email)
-                onRegistrationSuccess
+                prefManager.saveToken(uiState.authResponse.token)
+                prefManager.saveUserName(uiState.authResponse.user.name)
+                prefManager.saveUserId(uiState.authResponse.user.id)
+                prefManager.saveUserEmail(uiState.authResponse.user.email)
+                onLoginSuccess()
             }
 
             is AuthUiState.Error -> {
-
+                if (uiState.message.contains("name")) {
+                    nameError = uiState.message
+                } else {
+                    passwordError = uiState.message
+                }
             }
 
             else -> Unit
@@ -86,7 +87,6 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(80.dp))
-
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "App logo",
@@ -94,59 +94,24 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
                 .size(150.dp)
                 .align(Alignment.CenterHorizontally)
         )
-
         Spacer(modifier = Modifier.height(20.dp))
-
-        // Name
         OutlinedTextField(
-            value = name,
+            value = username,
             onValueChange = {
-                name = it
+                username = it.trim()
                 nameError = null
             },
-            label = { Text("Full Name") },
+            label = { Text("Username or Email") },
             isError = nameError != null,
             modifier = Modifier.fillMaxWidth()
         )
         if (nameError != null) {
             Text(nameError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
         }
-
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-                usernameError = null
-            },
-            label = { Text("Username") },
-            isError = usernameError != null,
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (usernameError != null) {
-            Text(usernameError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
-
-        // Email
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = null
-            },
-            label = { Text("Email") },
-            isError = emailError != null,
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (emailError != null) {
-            Text(emailError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
-
-        // Password
         OutlinedTextField(
             value = password,
             onValueChange = {
-                password = it
+                password = it.trim()
                 passwordError = null
             },
             label = { Text("Password") },
@@ -165,33 +130,20 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
         if (passwordError != null) {
             Text(passwordError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = {
                 var isValid = true
-                if (name.isBlank()) {
-                    nameError = "Name cannot be empty"
-                    isValid = false
-                }
                 if (username.isBlank()) {
-                    usernameError = "Username cannot be empty"
-                    isValid = false
-                }
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailError = "Enter a valid email"
+                    nameError = "Username or email cannot be empty"
                     isValid = false
                 }
                 if (password.length < 6) {
                     passwordError = "Password must be at least 6 characters"
                     isValid = false
                 }
-
                 if (isValid) {
-                    viewModel.registerUser(
-                        RegisterRequest(name, username, email, password)
-                    )
+                    viewModel.loginUser(LoginRequest(username, password))
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -201,7 +153,11 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
                 contentColor = Color.White
             )
         ) {
-            Text("Register")
+            Text("Login")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        TextButton(onClick = onNavigateToRegister) {
+            Text("Don't have an account? Register")
         }
         if (uiState is AuthUiState.Error) {
             Text(
@@ -212,4 +168,3 @@ fun RegistrationScreen(context: Context,onRegistrationSuccess: () -> Unit) {
         }
     }
 }
-

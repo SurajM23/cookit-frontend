@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.auth
+package com.example.cookit.ui.screens.auth.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
