@@ -1,5 +1,6 @@
 package com.example.cookit.ui.screens.home.screen
 
+import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
@@ -58,7 +58,7 @@ private val navItems = listOf(
 
 // Main screen composable
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(context: Context, navController: NavController) {
     var selectedIndex by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -79,12 +79,12 @@ fun HomeScreen(navController: NavController) {
         ) {
             // Show the selected tab's content
             when (selectedIndex) {
-                0 -> HomeTabContent()
+                0 -> HomeTabContent(context)
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
                 4 -> ProfileTabContent()
-                else -> HomeTabContent()
+                else -> HomeTabContent(context)
             }
         }
     }
@@ -99,7 +99,7 @@ private fun BottomNavBar(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .height(65.dp)
             .shadow(elevation = 20.dp)
             .background(PrimaryColor)
             .padding(top = 2.dp)

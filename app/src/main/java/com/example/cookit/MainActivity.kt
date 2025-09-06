@@ -5,18 +5,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.cookit.ui.screens.auth.screens.SplashScreen
-import com.example.cookit.ui.screens.auth.screens.LoginScreen
-import com.example.cookit.ui.screens.home.screen.HomeScreen
-import com.example.cookit.ui.theme.CookITTheme
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.navigation.compose.rememberNavController
+import com.example.cookit.ui.screens.auth.screens.LoginScreen
+import com.example.cookit.ui.screens.auth.screens.SplashScreen
+import com.example.cookit.ui.screens.home.screen.HomeScreen
+import com.example.cookit.ui.theme.CookITTheme
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
-                        HomeScreen(navController)
+                        HomeScreen(this@MainActivity, navController)
                     }
                 }
             }
