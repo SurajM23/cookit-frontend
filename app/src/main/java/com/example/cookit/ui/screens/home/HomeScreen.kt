@@ -24,6 +24,8 @@ import com.example.cookit.viewModel.HomeViewModelFactory
 fun HomeScreen(context: Context, navController: NavController) {
     var selectedIndex by remember { mutableStateOf(0) }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
+    val token = com.example.cookit.utils.PrefManager.getInstance(context).getToken() ?: ""
+    val userId = com.example.cookit.utils.PrefManager.getInstance(context).getUserId() ?: ""
     Scaffold(
         bottomBar = {
             BottomNavBar(
@@ -46,7 +48,7 @@ fun HomeScreen(context: Context, navController: NavController) {
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
-                4 -> ProfileTabContent()
+                4 -> ProfileTabContent(token,userId,homeViewModel)
                 else -> HomeTabContent(context,homeViewModel)
             }
         }

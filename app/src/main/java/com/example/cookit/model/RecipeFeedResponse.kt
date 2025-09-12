@@ -1,6 +1,7 @@
 package com.example.cookit.model
 
 data class RecipeFeedResponse(
+    val _id: String = "",
     val page: Int,
     val totalPages: Int,
     val totalRecipes: Int,

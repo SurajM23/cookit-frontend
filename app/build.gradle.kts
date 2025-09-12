@@ -80,4 +80,6 @@ dependencies {
     implementation(libs.font.awesome)
     implementation(libs.feather)
 
+    implementation(libs.accompanist.swiperefresh)
+
 }

@@ -4,6 +4,7 @@ import com.example.cookit.model.AuthResponse
 import com.example.cookit.model.LoginRequest
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RegisterRequest
+import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 import retrofit2.http.Body
@@ -34,6 +35,19 @@ interface ApiService {
     @GET("recipes/feed")
     suspend fun getRecipeFeed(
         @Header("Authorization") token: String?,
+        @Query("page") page: Int
+    ): Response<RecipeFeedResponse>
+
+    @GET("users/{userId}")
+    suspend fun getUserProfile(
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String
+    ): Response<UserProfile>
+
+    @GET("recipes/user/{userId}")
+    suspend fun getUserRecipes(
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String,
         @Query("page") page: Int
     ): Response<RecipeFeedResponse>
 }
