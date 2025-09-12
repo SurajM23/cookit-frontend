@@ -6,6 +6,10 @@ object NavigationConstants {
     const val LOGIN_SCREEN = "login_screen"
     const val REGISTER_SCREEN = "register_screen"
     const val HOME_SCREEN = "home_screen"
-    const val RECIPE_DETAIL_SCREEN = "recipe_detail_screen/{recipeId}"
-    fun recipeDetailScreenRoute(recipeId: String) = "recipe_detail_screen/$recipeId"
+    const val HOME_TAB = "HOME"
+    const val SEARCH_TAB = "SEARCH"
+    const val FAVORITES_TAB = "FAVOURITES"
+    const val PROFILE_TAB = "PROFILE"
+    const val ADD_RECIPE_SCREEN = "add_recipe_screen"
+
 }
