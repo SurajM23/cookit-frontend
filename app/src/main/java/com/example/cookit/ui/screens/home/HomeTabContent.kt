@@ -43,7 +43,7 @@ fun HomeTabContent(
     // Fetch data only if not present
     LaunchedEffect(Unit) {
         if (suggestionsState !is ApiResult.Success) {
-            homeViewModel.getUserSuggestions(PrefManager.getInstance(context).getToken() ?: "")
+//            homeViewModel.getUserSuggestions(PrefManager.getInstance(context).getToken() ?: "")
         }
         if (feedState !is ApiResult.Success) {
             homeViewModel.getRecipeFeed(PrefManager.getInstance(context).getToken(), page = 1)
@@ -53,8 +53,8 @@ fun HomeTabContent(
     Column(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)) {
-        // Top horizontal user suggestion list
-        when (suggestionsState) {
+
+    /*    when (suggestionsState) {
             is ApiResult.Loading -> {
                 Box(
                     modifier = Modifier
@@ -62,7 +62,7 @@ fun HomeTabContent(
                         .height(120.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryColor)
+//                    CircularProgressIndicator(color = PrimaryColor)
                 }
             }
 
@@ -86,12 +86,12 @@ fun HomeTabContent(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(userList.size) { idx ->
-                            UserSuggestionCard(
+*//*                            UserSuggestionCard(
                                 user = userList[idx],
                                 modifier = Modifier
                                     .width(120.dp)
                                     .height(160.dp)
-                            )
+                            )*//*
                         }
                     }
                 }
@@ -110,7 +110,7 @@ fun HomeTabContent(
                     )
                 }
             }
-        }
+        }*/
 
         // Recipe feed vertical list
         when (feedState) {
