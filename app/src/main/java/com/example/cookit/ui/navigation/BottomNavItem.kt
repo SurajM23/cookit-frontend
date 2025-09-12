@@ -7,7 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.cookit.data.utils.NavigationConstants
+import com.example.cookit.utils.NavigationConstants
 
 data class BottomNavItem(val label: String, val icon: ImageVector)
 

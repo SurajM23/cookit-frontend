@@ -1,6 +1,4 @@
-package com.example.cookit.ui.screens.model
-
-import com.example.cookit.ui.screens.auth.models.AuthResponse
+package com.example.cookit.model
 
 sealed class AuthUiState {
     object Idle : AuthUiState()

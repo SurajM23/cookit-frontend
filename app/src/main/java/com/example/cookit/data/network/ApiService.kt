@@ -1,9 +1,9 @@
 package com.example.cookit.data.network
 
-import com.example.cookit.ui.screens.auth.models.AuthResponse
-import com.example.cookit.ui.screens.auth.models.LoginRequest
-import com.example.cookit.ui.screens.auth.models.RegisterRequest
-import com.example.cookit.ui.screens.home.model.UserSuggestion
+import com.example.cookit.model.AuthResponse
+import com.example.cookit.model.LoginRequest
+import com.example.cookit.model.RegisterRequest
+import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

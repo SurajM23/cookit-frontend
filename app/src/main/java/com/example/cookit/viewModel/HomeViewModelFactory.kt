@@ -1,16 +1,16 @@
-package com.example.cookit.ui.screens.auth.viewModel
+package com.example.cookit.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.cookit.data.network.AuthRepository
+import com.example.cookit.data.network.HomeRepository
 
-class AuthViewModelFactory(
-    private val repository: AuthRepository
+class HomeViewModelFactory(
+    private val repository: HomeRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(repository) as T
+            return HomeViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

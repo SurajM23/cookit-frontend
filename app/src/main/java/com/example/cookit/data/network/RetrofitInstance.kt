@@ -1,6 +1,6 @@
 package com.example.cookit.data.network
 
-import com.example.cookit.data.utils.Constants
+import com.example.cookit.utils.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

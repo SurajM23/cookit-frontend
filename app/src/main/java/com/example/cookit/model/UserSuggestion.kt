@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.home.model
+package com.example.cookit.model
 
 data class UserSuggestion(
     val _id: String,

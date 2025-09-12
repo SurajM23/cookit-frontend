@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.home.model
+package com.example.cookit.model
 
 sealed class ApiResult<out T> {
     object Loading : ApiResult<Nothing>()

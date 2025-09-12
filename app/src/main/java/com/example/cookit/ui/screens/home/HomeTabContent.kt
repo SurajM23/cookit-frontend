@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.home.screen
+package com.example.cookit.ui.screens.home
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -10,12 +10,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.cookit.data.utils.PrefManager
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.ui.composables.ErrorMessageBox
 import com.example.cookit.ui.composables.UserSuggestionGrid
-import com.example.cookit.ui.screens.home.model.ApiResult
-import com.example.cookit.ui.screens.home.model.UserSuggestion
-import com.example.cookit.ui.screens.home.viewModel.HomeViewModel
+import com.example.cookit.model.ApiResult
+import com.example.cookit.model.UserSuggestion
+import com.example.cookit.viewModel.HomeViewModel
 import com.example.cookit.ui.theme.PrimaryColor
 
 @Composable

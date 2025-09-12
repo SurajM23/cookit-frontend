@@ -1,14 +1,14 @@
-package com.example.cookit.ui.screens.auth.viewModel
+package com.example.cookit.viewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cookit.ui.screens.auth.models.RegisterRequest
+import com.example.cookit.model.RegisterRequest
 import com.example.cookit.data.network.AuthRepository
-import com.example.cookit.ui.screens.auth.models.LoginRequest
-import com.example.cookit.ui.screens.model.AuthUiState
+import com.example.cookit.model.LoginRequest
+import com.example.cookit.model.AuthUiState
 import kotlinx.coroutines.launch
 
 

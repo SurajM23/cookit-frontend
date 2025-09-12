@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.auth.models
+package com.example.cookit.model
 
 data class LoginRequest(
     val loginId: String,

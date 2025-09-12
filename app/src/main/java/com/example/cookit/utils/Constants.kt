@@ -1,4 +1,4 @@
-package com.example.cookit.data.utils
+package com.example.cookit.utils
 
 
 object Constants {

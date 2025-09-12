@@ -14,12 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.RetrofitInstance
-import com.example.cookit.data.utils.NavigationConstants
-import com.example.cookit.ui.screens.auth.screens.LoginScreen
-import com.example.cookit.ui.screens.auth.screens.SplashScreen
-import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
-import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
-import com.example.cookit.ui.screens.home.screen.HomeScreen
+import com.example.cookit.utils.NavigationConstants
+import com.example.cookit.ui.screens.auth.LoginScreen
+import com.example.cookit.ui.screens.auth.SplashScreen
+import com.example.cookit.viewModel.AuthViewModel
+import com.example.cookit.viewModel.AuthViewModelFactory
+import com.example.cookit.ui.screens.home.HomeScreen
 import com.example.cookit.ui.theme.CookITTheme
 
 class MainActivity : ComponentActivity() {

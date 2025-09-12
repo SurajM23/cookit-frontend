@@ -1,6 +1,5 @@
-package com.example.cookit.ui.screens.auth.screens
+package com.example.cookit.ui.screens.auth
 
-import android.content.Context
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -24,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cookit.R
-import com.example.cookit.data.utils.PrefManager
-import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
+import com.example.cookit.utils.PrefManager
+import com.example.cookit.viewModel.AuthViewModel
 import kotlinx.coroutines.delay
 
 @Composable

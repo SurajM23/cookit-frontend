@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.cookit.ui.screens.home.model.UserSuggestion
+import com.example.cookit.model.UserSuggestion
 import com.example.cookit.ui.theme.PrimaryColor
 import com.example.cookit.ui.theme.SecondaryColor
 import com.example.cookit.ui.theme.White

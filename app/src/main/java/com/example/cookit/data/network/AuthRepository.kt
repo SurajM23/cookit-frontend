@@ -1,8 +1,8 @@
 package com.example.cookit.data.network
 
-import com.example.cookit.ui.screens.auth.models.AuthResponse
-import com.example.cookit.ui.screens.auth.models.LoginRequest
-import com.example.cookit.ui.screens.auth.models.RegisterRequest
+import com.example.cookit.model.AuthResponse
+import com.example.cookit.model.LoginRequest
+import com.example.cookit.model.RegisterRequest
 import retrofit2.Response
 
 class AuthRepository(private val api: ApiService) {

@@ -1,4 +1,4 @@
-package com.example.cookit.ui.screens.home.screen
+package com.example.cookit.ui.screens.home
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -16,8 +16,8 @@ import androidx.navigation.NavController
 import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.navigation.BottomNavBar
-import com.example.cookit.ui.screens.home.viewModel.HomeViewModel
-import com.example.cookit.ui.screens.home.viewModel.HomeViewModelFactory
+import com.example.cookit.viewModel.HomeViewModel
+import com.example.cookit.viewModel.HomeViewModelFactory
 
 // Main screen composable
 @Composable

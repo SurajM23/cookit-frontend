@@ -1,3 +1,5 @@
+package com.example.cookit.ui.screens.auth
+
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -7,16 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,43 +26,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cookit.R
-import com.example.cookit.ui.screens.auth.models.RegisterRequest
-import com.example.cookit.data.network.AuthRepository
-import com.example.cookit.data.network.RetrofitInstance
-import com.example.cookit.data.utils.PrefManager
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.ui.composables.CookitActionButton
 import com.example.cookit.ui.composables.CookitTextButton
 import com.example.cookit.ui.composables.CookitTextField
-import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
-import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
-import com.example.cookit.ui.screens.model.AuthUiState
+import com.example.cookit.model.LoginRequest
+import com.example.cookit.viewModel.AuthViewModel
+import com.example.cookit.model.AuthUiState
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Eye
 import compose.icons.fontawesomeicons.solid.EyeSlash
 
 @Composable
-fun RegistrationScreen(
+fun LoginScreen(
     context: Context,
-    onRegistrationSuccess: () -> Unit,
-    onNavigateBack: () -> Unit,
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit,
     viewModel: AuthViewModel
 ) {
-
-    var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-
-    // Error states
     var nameError by remember { mutableStateOf<String?>(null) }
-    var usernameError by remember { mutableStateOf<String?>(null) }
-    var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
-
     val uiState = viewModel.uiState
 
     LaunchedEffect(uiState) {
@@ -77,11 +61,15 @@ fun RegistrationScreen(
                 prefManager.saveUserName(uiState.authResponse.user.name)
                 prefManager.saveUserId(uiState.authResponse.user.id)
                 prefManager.saveUserEmail(uiState.authResponse.user.email)
-                onRegistrationSuccess
+                onLoginSuccess()
             }
 
             is AuthUiState.Error -> {
-
+                if (uiState.message.contains("name")) {
+                    nameError = uiState.message
+                } else {
+                    passwordError = uiState.message
+                }
             }
 
             else -> Unit
@@ -95,7 +83,6 @@ fun RegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(80.dp))
-
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "App logo",
@@ -103,45 +90,20 @@ fun RegistrationScreen(
                 .size(150.dp)
                 .align(Alignment.CenterHorizontally)
         )
-
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Name
-        CookitTextField(
-            value = name,
-            onValueChange = {
-                name = it
-                nameError = null
-            },
-            label = "Name",
-            isError = nameError != null,
-            errorMessage = nameError
-        )
-
-        // Username
         CookitTextField(
             value = username,
             onValueChange = {
                 username = it
-                usernameError = null
+                nameError = null
             },
             label = "Username",
-            isError = usernameError != null,
-            errorMessage = usernameError
+            isError = nameError != null,
+            errorMessage = nameError
         )
 
-        CookitTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = null
-            },
-            label = "Email",
-            isError = emailError != null,
-            errorMessage = emailError
-        )
 
-        // Password
         CookitTextField(
             value = password,
             onValueChange = {
@@ -166,30 +128,19 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         CookitActionButton(
-            text = "Register",
+            text = "Login",
             onClick = {
                 var isValid = true
-                if (name.isBlank()) {
-                    nameError = "Name cannot be empty"
-                    isValid = false
-                }
                 if (username.isBlank()) {
-                    usernameError = "Username cannot be empty"
-                    isValid = false
-                }
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailError = "Enter a valid email"
+                    nameError = "Username or email cannot be empty"
                     isValid = false
                 }
                 if (password.length < 6) {
                     passwordError = "Password must be at least 6 characters"
                     isValid = false
                 }
-
                 if (isValid) {
-                    viewModel.registerUser(
-                        RegisterRequest(name, username, email, password)
-                    )
+                    viewModel.loginUser(LoginRequest(username, password))
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -198,8 +149,8 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         CookitTextButton(
-            message = "Back to Login",
-            onClick =  onNavigateBack
+            message = "Don't have an account? Register",
+            onClick = onNavigateToRegister
         )
 
         if (uiState is AuthUiState.Error) {
@@ -211,4 +162,3 @@ fun RegistrationScreen(
         }
     }
 }
-

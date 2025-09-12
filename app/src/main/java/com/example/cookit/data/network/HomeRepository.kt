@@ -1,6 +1,6 @@
 package com.example.cookit.data.network
 
-import com.example.cookit.ui.screens.home.model.UserSuggestion
+import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 
 class HomeRepository(private val api: ApiService) {
