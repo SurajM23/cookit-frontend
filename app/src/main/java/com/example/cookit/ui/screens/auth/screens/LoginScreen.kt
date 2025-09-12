@@ -161,7 +161,7 @@ fun LoginScreen(
 
         CookitTextButton(
             message = "Don't have an account? Register",
-            onClick = { onNavigateToRegister }
+            onClick = onNavigateToRegister
         )
 
         if (uiState is AuthUiState.Error) {

@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onNavigateToRegister = {
-                        navController.navigate(NavigationConstants.REGISTER_SCREEN)
+                        navController.navigate(NavigationConstants.REGISTER_SCREEN){
+                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                        }
                     },
                     viewModel = authViewModel
                 )

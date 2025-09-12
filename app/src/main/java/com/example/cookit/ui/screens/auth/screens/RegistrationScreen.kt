@@ -36,6 +36,9 @@ import com.example.cookit.ui.screens.auth.models.RegisterRequest
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.data.utils.PrefManager
+import com.example.cookit.ui.composables.CookitActionButton
+import com.example.cookit.ui.composables.CookitTextButton
+import com.example.cookit.ui.composables.CookitTextField
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
 import com.example.cookit.ui.screens.model.AuthUiState
@@ -104,57 +107,50 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Name
-        OutlinedTextField(
+        CookitTextField(
             value = name,
             onValueChange = {
                 name = it
                 nameError = null
             },
-            label = { Text("Full Name") },
+            label = "Name",
             isError = nameError != null,
-            modifier = Modifier.fillMaxWidth()
+            errorMessage = nameError
         )
-        if (nameError != null) {
-            Text(nameError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
 
         // Username
-        OutlinedTextField(
+        CookitTextField(
             value = username,
             onValueChange = {
                 username = it
                 usernameError = null
             },
-            label = { Text("Username") },
+            label = "Username",
             isError = usernameError != null,
-            modifier = Modifier.fillMaxWidth()
+            errorMessage = usernameError
         )
-        if (usernameError != null) {
-            Text(usernameError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
 
-        // Email
-        OutlinedTextField(
+        CookitTextField(
             value = email,
             onValueChange = {
                 email = it
                 emailError = null
             },
-            label = { Text("Email") },
+            label = "Email",
             isError = emailError != null,
-            modifier = Modifier.fillMaxWidth()
+            errorMessage = emailError
         )
-        if (emailError != null) {
-            Text(emailError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
 
-        OutlinedTextField(
+        // Password
+        CookitTextField(
             value = password,
             onValueChange = {
-                password = it.trim()
+                password = it
                 passwordError = null
             },
-            label = { Text("Password") },
+            label = "Password",
+            isError = passwordError != null,
+            errorMessage = passwordError,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -164,17 +160,13 @@ fun RegistrationScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-            },
-            isError = passwordError != null,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
-        if (passwordError != null) {
-            Text(passwordError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
+        CookitActionButton(
+            text = "Register",
             onClick = {
                 var isValid = true
                 if (name.isBlank()) {
@@ -200,20 +192,15 @@ fun RegistrationScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
-                contentColor = Color.White
-            )
-        ) {
-            Text("Register")
-        }
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(onClick = onNavigateBack) {
-            Text("Back to Login")
-        }
+
+        CookitTextButton(
+            message = "Back to Login",
+            onClick =  onNavigateBack
+        )
 
         if (uiState is AuthUiState.Error) {
             Text(
