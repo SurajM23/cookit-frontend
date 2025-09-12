@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias (libs.plugins.hilt.application)
+    alias(libs.plugins.hilt.application)
     id("kotlin-kapt")
 }
 
@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui.text)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,13 +68,16 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.lifecycle.runtime.ktx.v261)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-    implementation (libs.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.navigation.animation)
 
     implementation(libs.coil.compose)
+
+    implementation(libs.font.awesome)
+    implementation(libs.feather)
 
 }

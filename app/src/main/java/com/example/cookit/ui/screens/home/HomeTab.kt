@@ -9,5 +9,5 @@ enum class HomeTab(val label: String, val icon: ImageVector) {
     Search("Search", Icons.Default.Search),
     Favorites("Favorites", Icons.Default.Favorite),
     Profile("Profile", Icons.Default.Person),
-    NewScreen("Add", Icons.Default.Add) // Use a different icon if you want
+    NewScreen("Add", Icons.Default.Add)
 }

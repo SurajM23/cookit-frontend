@@ -37,19 +37,26 @@ import com.example.cookit.R
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.data.utils.PrefManager
+import com.example.cookit.ui.composables.CookitActionButton
+import com.example.cookit.ui.composables.CookitTextButton
+import com.example.cookit.ui.composables.CookitTextField
 import com.example.cookit.ui.screens.auth.models.LoginRequest
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
 import com.example.cookit.ui.screens.model.AuthUiState
+import compose.icons.AllIcons
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Eye
+import compose.icons.fontawesomeicons.solid.EyeSlash
 
 @Composable
 fun LoginScreen(
     context: Context,
     onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    viewModel: AuthViewModel
 ) {
-    val repository = AuthRepository(RetrofitInstance.api)
-    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository))
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -95,43 +102,44 @@ fun LoginScreen(
                 .align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(
+
+        CookitTextField(
             value = username,
             onValueChange = {
-                username = it.trim()
+                username = it
                 nameError = null
             },
-            label = { Text("Username or Email") },
+            label = "Username",
             isError = nameError != null,
-            modifier = Modifier.fillMaxWidth()
+            errorMessage = nameError
         )
-        if (nameError != null) {
-            Text(nameError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
-        OutlinedTextField(
+
+
+        CookitTextField(
             value = password,
             onValueChange = {
-                password = it.trim()
+                password = it
                 passwordError = null
             },
-            label = { Text("Password") },
+            label = "Password",
+            isError = passwordError != null,
+            errorMessage = passwordError,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "Toggle password"
+                        imageVector = if (passwordVisible) FontAwesomeIcons.Solid.Eye else FontAwesomeIcons.Solid.EyeSlash,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-            },
-            isError = passwordError != null,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
-        if (passwordError != null) {
-            Text(passwordError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-        }
+
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
+
+        CookitActionButton(
+            text = "Login",
             onClick = {
                 var isValid = true
                 if (username.isBlank()) {
@@ -146,19 +154,16 @@ fun LoginScreen(
                     viewModel.loginUser(LoginRequest(username, password))
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
-                contentColor = Color.White
-            )
-        ) {
-            Text("Login")
-        }
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(onClick = onNavigateToRegister) {
-            Text("Don't have an account? Register")
-        }
+
+        CookitTextButton(
+            message = "Don't have an account? Register",
+            onClick = { onNavigateToRegister }
+        )
+
         if (uiState is AuthUiState.Error) {
             Text(
                 text = uiState.message,

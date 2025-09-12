@@ -39,17 +39,18 @@ import com.example.cookit.data.utils.PrefManager
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModel
 import com.example.cookit.ui.screens.auth.viewModel.AuthViewModelFactory
 import com.example.cookit.ui.screens.model.AuthUiState
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Eye
+import compose.icons.fontawesomeicons.solid.EyeSlash
 
 @Composable
 fun RegistrationScreen(
     context: Context,
     onRegistrationSuccess: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: AuthViewModel
 ) {
-    val repository = AuthRepository(RetrofitInstance.api)
-    val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(repository)
-    )
 
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -147,11 +148,10 @@ fun RegistrationScreen(
             Text(emailError!!, color = Color.Red, style = MaterialTheme.typography.bodySmall)
         }
 
-        // Password
         OutlinedTextField(
             value = password,
             onValueChange = {
-                password = it
+                password = it.trim()
                 passwordError = null
             },
             label = { Text("Password") },
@@ -159,8 +159,9 @@ fun RegistrationScreen(
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "Toggle password"
+                        imageVector = if (passwordVisible) FontAwesomeIcons.Solid.Eye else FontAwesomeIcons.Solid.EyeSlash,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             },

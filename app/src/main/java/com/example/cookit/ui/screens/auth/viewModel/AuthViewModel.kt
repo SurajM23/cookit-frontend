@@ -50,4 +50,13 @@ class AuthViewModel(
             }
         }
     }
+
+    fun dummyLoginApiCall() {
+        viewModelScope.launch {
+            try {
+                repository.loginUser(LoginRequest("testuser", "password"))
+            } catch (e: Exception) {
+            }
+        }
+    }
 }
