@@ -11,14 +11,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.cookit.data.network.HomeRepository
+import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.navigation.BottomNavBar
+import com.example.cookit.ui.screens.home.viewModel.HomeViewModel
+import com.example.cookit.ui.screens.home.viewModel.HomeViewModelFactory
 
 // Main screen composable
 @Composable
 fun HomeScreen(context: Context, navController: NavController) {
     var selectedIndex by remember { mutableStateOf(0) }
-
+    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
     Scaffold(
         bottomBar = {
             BottomNavBar(
@@ -37,12 +42,12 @@ fun HomeScreen(context: Context, navController: NavController) {
         ) {
             // Show the selected tab's content
             when (selectedIndex) {
-                0 -> HomeTabContent(context)
+                0 -> HomeTabContent(context,homeViewModel)
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
                 4 -> ProfileTabContent()
-                else -> HomeTabContent(context)
+                else -> HomeTabContent(context,homeViewModel)
             }
         }
     }
