@@ -1,5 +1,6 @@
 package com.example.cookit.data.network
 
+import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 
@@ -12,4 +13,7 @@ class HomeRepository(private val api: ApiService) {
         return api.followUser(token = token, userId = userId)
     }
 
+    suspend fun getRecipeFeed(token: String?,page: Int): Response<RecipeFeedResponse> {
+        return api.getRecipeFeed(token = token, page = page)
+    }
 }

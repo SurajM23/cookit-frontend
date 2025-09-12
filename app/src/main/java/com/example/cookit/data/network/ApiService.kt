@@ -2,6 +2,7 @@ package com.example.cookit.data.network
 
 import com.example.cookit.model.AuthResponse
 import com.example.cookit.model.LoginRequest
+import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RegisterRequest
 import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
@@ -10,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/register")
@@ -29,4 +31,9 @@ interface ApiService {
         @Path("userId") userId: String
     ): Response<Unit>
 
+    @GET("recipes/feed")
+    suspend fun getRecipeFeed(
+        @Header("Authorization") token: String?,
+        @Query("page") page: Int
+    ): Response<RecipeFeedResponse>
 }
