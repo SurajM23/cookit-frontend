@@ -33,4 +33,20 @@ class HomeViewModel(
             }
         }
     }
+
+    fun followUser(token: String, userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.followUser(token, userId)
+                if (response.isSuccessful) {
+
+                } else {
+
+                }
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
 }
