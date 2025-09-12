@@ -20,10 +20,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +51,9 @@ import com.example.cookit.model.UserProfile
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Regular
+import compose.icons.fontawesomeicons.regular.User
 
 @Composable
 fun ProfileTabContent(
@@ -68,10 +70,12 @@ fun ProfileTabContent(
 
     // Initial load
     LaunchedEffect(userId) {
-        viewModel.getUserProfile(token, userId)
-        currentPage = 1
-        isEndReached = false
-        viewModel.getRecipeFeed(token, userId, 1)
+        if (profileState !is ApiResult.Success) {
+            viewModel.getUserProfile(token, userId)
+            currentPage = 1
+            isEndReached = false
+            viewModel.getRecipeFeed(token, userId, 1)
+        }
     }
 
     // Collect and append recipes for infinite scroll
@@ -172,100 +176,125 @@ fun ProfileTabContent(
     }
 }
 
+
 @Composable
-fun ProfileHeader(profile: UserProfile) {
-    Card(
+fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boolean = false) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(top = 24.dp, bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 2.dp,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary
-                            )
-                        ),
-                        shape = CircleShape
+                .size(92.dp)
+                .clip(CircleShape)
+                .border(
+                    width = 2.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary
+                        )
                     ),
-                contentAlignment = Alignment.Center
-            ) {
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (profile.avatarUrl.isEmpty()) {
+                // Show user icon if URL is empty
+                Icon(
+                    imageVector = FontAwesomeIcons.Regular.User,
+                    contentDescription = "Default User Icon",
+                    modifier = Modifier
+                        .size(88.dp)
+                        .clip(CircleShape)
+                        .padding(20.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            } else {
+                // Load image if URL is not empty
                 AsyncImage(
-                    model = profile.avatarUrl.ifEmpty {
-                        "https://ui-avatars.com/api/?name=${profile.name.replace(" ", "+")}"
-                    },
+                    model = profile.avatarUrl,
                     contentDescription = "Profile Avatar",
                     modifier = Modifier
-                        .size(76.dp)
+                        .size(88.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
-            Spacer(Modifier.width(20.dp))
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = profile.name,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = "@${profile.username}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary),
-                    fontSize = 16.sp
-                )
-                if (profile.bio.isNotEmpty()) {
-                    Text(
-                        text = profile.bio,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(vertical = 6.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        "Followers: ${profile.followersCount}",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Text(
-                        "Following: ${profile.followingCount}",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
         }
+
+
+        Spacer(Modifier.height(10.dp))
+        // Username and name
+        Text(
+            text = profile.name,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 20.sp
+        )
+        Text(
+            text = "@${profile.username}",
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary),
+            fontSize = 15.sp
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // Counts row: Posts, Followers, Following
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            ProfileCountItem(count = postCount, label = "Posts")
+            ProfileCountItem(count = profile.followersCount, label = "Followers")
+            ProfileCountItem(count = profile.followingCount, label = "Following")
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // Bio
+        if (profile.bio.isNotEmpty()) {
+            Text(
+                text = profile.bio,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            )
+        }
+
+        Spacer(Modifier.height(14.dp))
+
     }
 }
+
+// Helper for count display
+@Composable
+fun ProfileCountItem(count: Int, label: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(80.dp)
+    ) {
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 18.sp
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 13.sp
+        )
+    }
+}
+
 @Composable
 fun RecipeGridItem(recipe: Recipe) {
     // Replace with your own recipe card/grid design

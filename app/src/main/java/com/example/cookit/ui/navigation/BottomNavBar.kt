@@ -33,7 +33,7 @@ fun BottomNavBar(
             .padding(top = 2.dp)
     ) {
         val baseIconSize = if (maxWidth < 380.dp) 24.dp else 28.dp
-        val baseTextSize = if (maxWidth < 380.dp) 11.sp else 12.sp
+        val baseTextSize = if (maxWidth < 380.dp) 9.sp else 10.sp
         val selectedIconSizeIncrease = 4.dp
         val selectedTextSizeIncrease = 1.sp
 
