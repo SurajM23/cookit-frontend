@@ -58,12 +58,15 @@ class HomeViewModel(
         _feedState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
-                val response = repository.getRecipeFeed(token,page)
+                val response = repository.getRecipeFeed(token, page)
                 if (response.isSuccessful && response.body() != null) {
                     _feedState.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _feedState.value = ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                } else
+                    if (response.code() == 401) {
+                        _feedState.value = ApiResult.Error("Unauthorized")
+                    } else {
+                        _feedState.value = ApiResult.Error(response.message() ?: "Unknown error")
+                    }
             } catch (e: Exception) {
                 _feedState.value = ApiResult.Error(e.message ?: "Network error")
             }

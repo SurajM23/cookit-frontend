@@ -44,12 +44,12 @@ fun HomeScreen(context: Context, navController: NavController) {
         ) {
             // Show the selected tab's content
             when (selectedIndex) {
-                0 -> HomeTabContent(context,homeViewModel)
+                0 -> HomeTabContent(context, homeViewModel, navController)
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
                 4 -> ProfileTabContent(token,userId,homeViewModel)
-                else -> HomeTabContent(context,homeViewModel)
+                else -> HomeTabContent(context, homeViewModel, navController)
             }
         }
     }
