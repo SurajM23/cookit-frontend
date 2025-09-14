@@ -73,7 +73,7 @@ fun HomeTabContent(
     }
 
     val isRefreshing =
-        isLoadingFeed && currentPage == 1 // show SwipeRefresh only for initial load or pull-to-refresh
+        isLoadingFeed && currentPage == 1
 
     Column(
         modifier = Modifier
@@ -90,18 +90,7 @@ fun HomeTabContent(
             }
         ) {
             when {
-                isLoadingFeed && currentPage == 1 -> {
-                    // Only show the main spinner for initial feed load or pull-to-refresh
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
                 isLoadingSuggestions -> {
-                    // Only show suggestions spinner if feed is not loading
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -113,21 +102,17 @@ fun HomeTabContent(
                 }
 
                 else -> {
-                    // Show content only when not loading
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // Top: User suggestions row (like Instagram stories)
                         item {
                             ShowUserSuggestionsRow(
+                                navController = navController,
                                 suggestionsState = suggestionsState,
-                                isLoading = false // loading handled above
                             )
                         }
-
-                        // Feed
                         when (feedState) {
                             is ApiResult.Success -> {
                                 val recipes =
@@ -153,7 +138,6 @@ fun HomeTabContent(
                                     }
                                 }
 
-                                // Show loading spinner at bottom if paginating
                                 if (isLoadingFeed && currentPage > 1) {
                                     item {
                                         Box(
@@ -207,8 +191,8 @@ fun HomeTabContent(
 
 @Composable
 fun ShowUserSuggestionsRow(
+    navController: NavController,
     suggestionsState: ApiResult<List<UserSuggestion>>,
-    isLoading: Boolean // always false now
 ) {
     when (suggestionsState) {
         is ApiResult.Success -> {
@@ -231,7 +215,9 @@ fun ShowUserSuggestionsRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(userList) { user ->
-                        UserSuggestionStoryCard(user)
+                        UserSuggestionStoryCard(user, onCardClick = {
+                            navController.navigate(NavigationConstants.USER_PROFILE_ROUTE)
+                        })
                     }
                 }
             }
@@ -251,7 +237,6 @@ fun ShowUserSuggestionsRow(
             }
         }
 
-        else -> { /* Do nothing here, spinner shown above if loading */
-        }
+        else -> {}
     }
 }

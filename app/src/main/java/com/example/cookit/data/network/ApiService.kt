@@ -50,4 +50,10 @@ interface ApiService {
         @Path("userId") userId: String,
         @Query("page") page: Int
     ): Response<RecipeFeedResponse>
+
+
+    @GET("user/{userId}")
+    suspend fun getUserById(
+        @Path("userId") userId: String,
+    ): Response<UserProfile>
 }

@@ -13,14 +13,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cookit.data.network.AuthRepository
+import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.data.network.RetrofitInstance
-import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.ui.screens.auth.LoginScreen
 import com.example.cookit.ui.screens.auth.SplashScreen
+import com.example.cookit.ui.screens.home.HomeScreen
+import com.example.cookit.ui.screens.home.UserProfileScreen
+import com.example.cookit.ui.theme.CookITTheme
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.AuthViewModel
 import com.example.cookit.viewModel.AuthViewModelFactory
-import com.example.cookit.ui.screens.home.HomeScreen
-import com.example.cookit.ui.theme.CookITTheme
+import com.example.cookit.viewModel.HomeViewModel
+import com.example.cookit.viewModel.HomeViewModelFactory
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
@@ -39,6 +43,8 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         val authViewModel: AuthViewModel =
             viewModel(factory = AuthViewModelFactory(AuthRepository(RetrofitInstance.api)))
+        val homeViewModel: HomeViewModel =
+            viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
 
         NavHost(
             navController = navController,
@@ -69,7 +75,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onNavigateToRegister = {
-                        navController.navigate(NavigationConstants.REGISTER_SCREEN){
+                        navController.navigate(NavigationConstants.REGISTER_SCREEN) {
                             popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
                         }
                     },
@@ -95,6 +101,15 @@ class MainActivity : ComponentActivity() {
             composable(NavigationConstants.HOME_SCREEN) {
                 HomeScreen(context, navController)
             }
+
+            composable(NavigationConstants.USER_PROFILE_ROUTE) {
+                composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    UserProfileScreen(userId, viewModel = homeViewModel, {})
+                }
+            }
+
+
         }
     }
 }

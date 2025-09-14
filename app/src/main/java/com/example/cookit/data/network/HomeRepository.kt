@@ -21,4 +21,7 @@ class HomeRepository(private val api: ApiService) {
 
     suspend fun getUserRecipes(token: String?, userId: String, page: Int) =
         api.getUserRecipes(token, userId, page)
+
+    suspend fun getUserById(userId: String) = api.getUserById(userId)
+
 }

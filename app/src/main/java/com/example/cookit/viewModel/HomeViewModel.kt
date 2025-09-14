@@ -112,4 +112,25 @@ class HomeViewModel(
         }
     }
 
+    private val _userProfile = MutableStateFlow<ApiResult<UserProfile>>(ApiResult.Loading)
+    val userProfile: StateFlow<ApiResult<UserProfile>> = _userProfile
+
+    fun loadUserProfile(userId: String) {
+        viewModelScope.launch {
+            _profileState.value = ApiResult.Loading
+            viewModelScope.launch {
+                try {
+                    val response = repository.getUserById(userId)
+                    if (response.isSuccessful && response.body() != null) {
+                        _profileState.value = ApiResult.Success(response.body()!!)
+                    } else {
+                        _profileState.value = ApiResult.Error(response.message() ?: "Unknown error")
+                    }
+                } catch (e: Exception) {
+                    _profileState.value = ApiResult.Error(e.message ?: "Network error")
+                }
+            }
+        }
+    }
+
 }

@@ -39,7 +39,6 @@ fun UserSuggestionStoryCard(
             .clickable { onCardClick?.invoke() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Story ring avatar
         Box(
             modifier = Modifier
                 .size(64.dp)
