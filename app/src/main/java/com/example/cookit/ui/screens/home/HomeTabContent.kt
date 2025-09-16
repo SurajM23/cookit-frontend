@@ -104,7 +104,7 @@ fun HomeTabContent(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(12.dp),
+                        contentPadding = PaddingValues(0.dp,12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item {
@@ -211,7 +211,6 @@ fun ShowUserSuggestionsRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    contentPadding = PaddingValues(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(userList) { user ->
