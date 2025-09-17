@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,9 +60,9 @@ fun UserSuggestionStoryCard(
                 .clip(CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            if (!user.profileImageUrl.isNullOrBlank()) {
+            if (!user.avatarUrl.isNullOrBlank()) {
                 AsyncImage(
-                    model = user.profileImageUrl,
+                    model = user.avatarUrl,
                     contentDescription = "profile image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

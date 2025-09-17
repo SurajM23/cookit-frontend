@@ -50,6 +50,7 @@ import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.ui.composables.CookitTextButton
+import com.example.cookit.ui.theme.PrimaryColor
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -129,7 +130,8 @@ fun ProfileTabContent(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .background(color = Color.White),
             state = gridState,
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -196,7 +198,7 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(Color.White)
             .padding(top = 24.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -225,7 +227,7 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
                         .size(88.dp)
                         .clip(CircleShape)
                         .padding(20.dp),
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.primary
                 )
             } else {
                 // Load image if URL is not empty
@@ -234,7 +236,8 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
                     contentDescription = "Profile Avatar",
                     modifier = Modifier
                         .size(88.dp)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .background(color = PrimaryColor),
                     contentScale = ContentScale.Crop
                 )
             }
@@ -246,12 +249,12 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
         Text(
             text = profile.name,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = Color.Black,
             fontSize = 20.sp
         )
         Text(
             text = "@${profile.username}",
-            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary),
+            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
             fontSize = 15.sp
         )
 
@@ -274,7 +277,7 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
             Text(
                 text = profile.bio,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,13 +299,13 @@ fun ProfileCountItem(count: Int, label: String) {
         Text(
             text = count.toString(),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = Color.Black,
             fontSize = 18.sp
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = Color.Black,
             fontSize = 13.sp
         )
     }
