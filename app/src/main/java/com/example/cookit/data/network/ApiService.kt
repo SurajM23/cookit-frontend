@@ -52,7 +52,7 @@ interface ApiService {
     ): Response<RecipeFeedResponse>
 
 
-    @GET("user/{userId}")
+    @GET("users/{userId}")
     suspend fun getUserById(
         @Path("userId") userId: String,
     ): Response<UserProfile>

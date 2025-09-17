@@ -1,6 +1,7 @@
 package com.example.cookit.ui.screens.home
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -215,7 +216,8 @@ fun ShowUserSuggestionsRow(
                 ) {
                     items(userList) { user ->
                         UserSuggestionStoryCard(user, onCardClick = {
-                            navController.navigate(NavigationConstants.USER_PROFILE_ROUTE)
+                            Log.e("HomeTabContent", "User clicked: ${user._id}" )
+                            navController.navigate(NavigationConstants.USER_PROFILE_ROUTE.replace("{userId}", user._id))
                         })
                     }
                 }

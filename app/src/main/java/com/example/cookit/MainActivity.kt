@@ -3,6 +3,7 @@ package com.example.cookit
 import RegistrationScreen
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -102,14 +103,10 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(context, navController)
             }
 
-            composable(NavigationConstants.USER_PROFILE_ROUTE) {
-                composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
-                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                    UserProfileScreen(userId, viewModel = homeViewModel, {})
-                }
+            composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                UserProfileScreen(context,userId, viewModel = homeViewModel, {})
             }
-
-
         }
     }
 }

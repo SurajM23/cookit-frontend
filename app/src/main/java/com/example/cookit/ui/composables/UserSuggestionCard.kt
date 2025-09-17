@@ -1,5 +1,6 @@
 package com.example.cookit.ui.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,7 +37,9 @@ fun UserSuggestionStoryCard(
         modifier = modifier
             .width(72.dp)
             .padding(vertical = 8.dp)
-            .clickable { onCardClick?.invoke() },
+            .clickable {
+                onCardClick?.invoke()
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
