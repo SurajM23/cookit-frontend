@@ -1,5 +1,6 @@
 package com.example.cookit.ui.screens.home
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -48,12 +49,15 @@ import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
+import com.example.cookit.ui.composables.CookitTextButton
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.User
+import kotlin.collections.contains
 
 @Composable
 fun ProfileTabContent(
@@ -279,7 +283,6 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
         }
 
         Spacer(Modifier.height(14.dp))
-
     }
 }
 

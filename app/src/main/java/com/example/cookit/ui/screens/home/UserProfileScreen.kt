@@ -50,6 +50,8 @@ import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
+import com.example.cookit.ui.composables.CookitTextButton
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -127,7 +129,8 @@ fun UserProfileScreen(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .background(Color.White),
             state = gridState,
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -161,6 +164,7 @@ fun UserProfileScreen(
                     is ApiResult.Success -> {
                         val profile = (profileState as ApiResult.Success<UserProfile>).data
                         ProfileHeader(profile, postCount = allRecipes.size)
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
