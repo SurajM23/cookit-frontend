@@ -50,6 +50,7 @@ import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
+import com.example.cookit.ui.composables.CookitActionButton
 import com.example.cookit.ui.composables.CookitTextButton
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
@@ -163,8 +164,8 @@ fun UserProfileScreen(
 
                     is ApiResult.Success -> {
                         val profile = (profileState as ApiResult.Success<UserProfile>).data
-                        ProfileHeader(profile, postCount = allRecipes.size)
-                        Spacer(Modifier.height(8.dp))
+                            ProfileHeader(profile, postCount = allRecipes.size,true)
+                            Spacer(Modifier.height(8.dp))
                     }
                 }
             }

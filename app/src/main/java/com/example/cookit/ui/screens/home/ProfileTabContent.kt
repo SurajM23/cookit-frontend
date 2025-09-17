@@ -49,6 +49,7 @@ import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
+import com.example.cookit.ui.composables.CookitActionButton
 import com.example.cookit.ui.composables.CookitTextButton
 import com.example.cookit.ui.theme.PrimaryColor
 import com.example.cookit.utils.PrefManager
@@ -285,7 +286,14 @@ fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boole
             )
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(4.dp))
+
+        if (isCurrentUser) {
+            CookitActionButton("Follow", {
+
+            })
+        }
+        Spacer(Modifier.height(6.dp))
     }
 }
 
