@@ -1,6 +1,5 @@
 package com.example.cookit.ui.screens.home
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -48,9 +47,9 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
+import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.ui.composables.CookitActionButton
-import com.example.cookit.ui.composables.CookitTextButton
 import com.example.cookit.ui.theme.PrimaryColor
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
@@ -59,127 +58,103 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.User
-import kotlin.collections.contains
 
 @Composable
-fun ProfileTabContent(
-    token: String,
-    userId: String,
-    viewModel: HomeViewModel
+fun ProfileContent(
+    viewModel: HomeViewModel,
+    isCurrentUser: Boolean = false,
+    onActionClick: (String) -> Unit = {}
 ) {
+
     val profileState by viewModel.profileState.collectAsState()
     val feedState by viewModel.feedState2.collectAsState()
+    val followAction by viewModel.followResponse.collectAsState()
+
     val gridState = rememberLazyGridState()
     var currentPage by rememberSaveable { mutableStateOf(1) }
     var isEndReached by rememberSaveable { mutableStateOf(false) }
     var allRecipes by rememberSaveable { mutableStateOf(listOf<Recipe>()) }
+    var action by rememberSaveable { mutableStateOf("follow") }
+
+    val isRefreshing = profileState is ApiResult.Loading || feedState is ApiResult.Loading
 
     // Initial load
-    LaunchedEffect(userId) {
-        if (profileState !is ApiResult.Success) {
-            viewModel.getUserProfile(token, userId)
-            currentPage = 1
-            isEndReached = false
-            viewModel.getRecipeFeed(token, userId, 1)
-        }
+    LaunchedEffect(PrefManager.getUserId() ?: "") {
+        currentPage = 1
+        isEndReached = false
+        viewModel.getUserProfile(PrefManager.getUserId() ?: "")
+        viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
     }
 
-    // Collect and append recipes for infinite scroll
+    // Recipes update
     LaunchedEffect(feedState) {
         if (feedState is ApiResult.Success) {
             val newRecipes = (feedState as ApiResult.Success<RecipeFeedResponse>).data.recipes
-            if (currentPage == 1) {
-                allRecipes = newRecipes
-            } else {
-                if (newRecipes.isEmpty()) {
-                    isEndReached = true
-                } else {
-                    allRecipes = allRecipes + newRecipes
-                }
-            }
+            allRecipes = if (currentPage == 1) newRecipes else allRecipes + newRecipes
+            if (newRecipes.isEmpty()) isEndReached = true
         }
     }
 
-    // Infinite scroll: load next page when near end
+    // Follow/Unfollow update
+    LaunchedEffect(followAction) {
+        if (followAction is ApiResult.Success) {
+            val msg = (followAction as ApiResult.Success<SimpleMessageResponse>).data.message
+            action = if (msg.contains("unfollowed", true)) "follow" else "unfollow"
+        }
+    }
+
+    // Infinite scroll
     LaunchedEffect(gridState, allRecipes, isEndReached) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleItem ->
-                if (
-                    !isEndReached &&
+                if (!isEndReached &&
                     lastVisibleItem == (allRecipes.size - 3) &&
                     feedState !is ApiResult.Loading
                 ) {
-                    currentPage += 1
-                    viewModel.getRecipeFeed(token, userId, currentPage)
+                    currentPage++
+                    viewModel.getUserRecipes(PrefManager.getUserId() ?: "",currentPage)
                 }
             }
     }
-
-    val isRefreshing = feedState is ApiResult.Loading || profileState is ApiResult.Loading
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing),
         onRefresh = {
             currentPage = 1
             isEndReached = false
-            viewModel.getUserProfile(token, userId)
-            viewModel.getRecipeFeed(token, userId, 1)
+            viewModel.getUserProfile(PrefManager.getUserId() ?: "")
+            viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
         }
     ) {
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
-                .background(color = Color.White),
             state = gridState,
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp)
+                .background(Color.White)
         ) {
-            // Header as first full-span item
             item(span = { GridItemSpan(2) }) {
-                when (profileState) {
-                    is ApiResult.Loading -> {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-
-                    is ApiResult.Error -> {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text((profileState as ApiResult.Error).message)
-                        }
-                    }
-
-                    is ApiResult.Success -> {
-                        val profile = (profileState as ApiResult.Success<UserProfile>).data
-                        ProfileHeader(profile, postCount = allRecipes.size)
-                    }
-                }
+                ProfileHeaderSection(
+                    profileState = profileState,
+                    postCount = allRecipes.size,
+                    isCurrentUser = isCurrentUser,
+                    action = action,
+                    onActionClick = { onActionClick(action) }
+                )
             }
 
-            // User posts (grid items)
             items(allRecipes) { recipe ->
                 RecipeGridItem(recipe)
             }
 
-            // Loading indicator at bottom
             if (feedState is ApiResult.Loading && currentPage > 1) {
                 item(span = { GridItemSpan(2) }) {
                     Box(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
@@ -188,161 +163,6 @@ fun ProfileTabContent(
                     }
                 }
             }
-        }
-
-    }
-}
-
-
-@Composable
-fun ProfileHeader(profile: UserProfile, postCount: Int = 0, isCurrentUser: Boolean = false) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(top = 24.dp, bottom = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .size(92.dp)
-                .clip(CircleShape)
-                .border(
-                    width = 2.dp,
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.secondary
-                        )
-                    ),
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            if (profile.avatarUrl.isEmpty()) {
-                // Show user icon if URL is empty
-                Icon(
-                    imageVector = FontAwesomeIcons.Regular.User,
-                    contentDescription = "Default User Icon",
-                    modifier = Modifier
-                        .size(88.dp)
-                        .clip(CircleShape)
-                        .padding(20.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            } else {
-                // Load image if URL is not empty
-                AsyncImage(
-                    model = profile.avatarUrl,
-                    contentDescription = "Profile Avatar",
-                    modifier = Modifier
-                        .size(88.dp)
-                        .clip(CircleShape)
-                        .background(color = PrimaryColor),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-
-
-        Spacer(Modifier.height(10.dp))
-        // Username and name
-        Text(
-            text = profile.name,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = Color.Black,
-            fontSize = 20.sp
-        )
-        Text(
-            text = "@${profile.username}",
-            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
-            fontSize = 15.sp
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        // Counts row: Posts, Followers, Following
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            ProfileCountItem(count = postCount, label = "Posts")
-            ProfileCountItem(count = profile.followersCount, label = "Followers")
-            ProfileCountItem(count = profile.followingCount, label = "Following")
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        // Bio
-        if (profile.bio.isNotEmpty()) {
-            Text(
-                text = profile.bio,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            )
-        }
-
-        Spacer(Modifier.height(4.dp))
-
-        if (isCurrentUser) {
-            CookitActionButton("Follow", {
-
-            })
-        }
-        Spacer(Modifier.height(6.dp))
-    }
-}
-
-// Helper for count display
-@Composable
-fun ProfileCountItem(count: Int, label: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp)
-    ) {
-        Text(
-            text = count.toString(),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = Color.Black,
-            fontSize = 18.sp
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Black,
-            fontSize = 13.sp
-        )
-    }
-}
-
-@Composable
-fun RecipeGridItem(recipe: Recipe) {
-    // Replace with your own recipe card/grid design
-    Card(
-        Modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-        ) {
-            AsyncImage(
-                model = recipe.imageUrl,
-                contentDescription = recipe.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(MaterialTheme.shapes.medium),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(recipe.title, style = MaterialTheme.typography.titleMedium)
-            // Add more recipe info as desired
         }
     }
 }

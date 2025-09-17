@@ -56,11 +56,10 @@ fun LoginScreen(
     LaunchedEffect(uiState) {
         when (uiState) {
             is AuthUiState.Success -> {
-                val prefManager = PrefManager.getInstance(context)
-                prefManager.saveToken(uiState.authResponse.token)
-                prefManager.saveUserName(uiState.authResponse.user.name)
-                prefManager.saveUserId(uiState.authResponse.user.id)
-                prefManager.saveUserEmail(uiState.authResponse.user.email)
+                PrefManager.saveToken(uiState.authResponse.token)
+                PrefManager.saveUserName(uiState.authResponse.user.name)
+                PrefManager.saveUserId(uiState.authResponse.user.id)
+                PrefManager.saveUserEmail(uiState.authResponse.user.email)
                 onLoginSuccess()
             }
 

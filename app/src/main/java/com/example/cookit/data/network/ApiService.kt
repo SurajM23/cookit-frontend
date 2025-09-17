@@ -4,6 +4,7 @@ import com.example.cookit.model.AuthResponse
 import com.example.cookit.model.LoginRequest
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RegisterRequest
+import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
@@ -15,38 +16,47 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
+
+    // ---------- Auth ----------
     @POST("auth/register")
-    suspend fun registerUser(@Body request: RegisterRequest): Response<AuthResponse>
+    suspend fun registerUser(
+        @Body request: RegisterRequest
+    ): Response<AuthResponse>
 
     @POST("auth/login")
-    suspend fun loginUser(@Body request: LoginRequest): Response<AuthResponse>
+    suspend fun loginUser(
+        @Body request: LoginRequest
+    ): Response<AuthResponse>
 
+
+    // ---------- Users ----------
     @GET("users/suggestions")
-    suspend fun getUserSuggestions(
-        @Header("Authorization") token: String
-    ): Response<List<UserSuggestion>>
-
-    @POST("users/{userId}/follow")
-    suspend fun followUser(
-        @Header("Authorization") token: String,
-        @Path("userId") userId: String
-    ): Response<Unit>
-
-    @GET("recipes/feed")
-    suspend fun getRecipeFeed(
-        @Header("Authorization") token: String?,
-        @Query("page") page: Int
-    ): Response<RecipeFeedResponse>
+    suspend fun getUserSuggestions(): Response<List<UserSuggestion>>
 
     @GET("users/{userId}")
     suspend fun getUserProfile(
-        @Header("Authorization") token: String?,
         @Path("userId") userId: String
     ): Response<UserProfile>
 
+    @POST("users/{userId}/follow")
+    suspend fun followUser(
+        @Path("userId") userId: String
+    ): Response<SimpleMessageResponse>
+
+    @POST("users/{userId}/unfollow")
+    suspend fun unfollowUser(
+        @Path("userId") userId: String
+    ): Response<SimpleMessageResponse>
+
+
+    // ---------- Recipes ----------
+    @GET("recipes/feed")
+    suspend fun getRecipeFeed(
+        @Query("page") page: Int
+    ): Response<RecipeFeedResponse>
+
     @GET("recipes/user/{userId}")
     suspend fun getUserRecipes(
-        @Header("Authorization") token: String?,
         @Path("userId") userId: String,
         @Query("page") page: Int
     ): Response<RecipeFeedResponse>
@@ -56,4 +66,5 @@ interface ApiService {
     suspend fun getUserById(
         @Path("userId") userId: String,
     ): Response<UserProfile>
+
 }

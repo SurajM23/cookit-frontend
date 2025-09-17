@@ -1,6 +1,5 @@
 package com.example.cookit.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +30,6 @@ fun UserSuggestionStoryCard(
     user: UserSuggestion,
     modifier: Modifier = Modifier,
     onCardClick: (() -> Unit)? = null,
-    ringColor: Color = PrimaryColor
 ) {
     Column(
         modifier = modifier
@@ -50,9 +47,9 @@ fun UserSuggestionStoryCard(
                     width = 3.dp,
                     brush = Brush.sweepGradient(
                         listOf(
-                            ringColor,
-                            ringColor.copy(alpha = 0.5f),
-                            ringColor,
+                            PrimaryColor,
+                            PrimaryColor.copy(alpha = 0.5f),
+                            PrimaryColor
                         )
                     ),
                     shape = CircleShape

@@ -18,14 +18,15 @@ import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.navigation.BottomNavBar
 import com.example.cookit.viewModel.HomeViewModel
 import com.example.cookit.viewModel.HomeViewModelFactory
-
-// Main screen composable
 @Composable
-fun HomeScreen(context: Context, navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api))
+    )
+) {
     var selectedIndex by remember { mutableStateOf(0) }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
-    val token = com.example.cookit.utils.PrefManager.getInstance(context).getToken() ?: ""
-    val userId = com.example.cookit.utils.PrefManager.getInstance(context).getUserId() ?: ""
+
     Scaffold(
         bottomBar = {
             BottomNavBar(
@@ -42,14 +43,13 @@ fun HomeScreen(context: Context, navController: NavController) {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // Show the selected tab's content
             when (selectedIndex) {
-                0 -> HomeTabContent(context, homeViewModel, navController)
+                0 -> HomeTabContent(navController,  homeViewModel)
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
-                4 -> ProfileTabContent(token,userId,homeViewModel)
-                else -> HomeTabContent(context, homeViewModel, navController)
+                4 -> ProfileContent(viewModel = homeViewModel)
+                else -> HomeTabContent(navController,homeViewModel)
             }
         }
     }

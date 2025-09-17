@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,79 +35,85 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CookITTheme {
-                AppNavHost(this@MainActivity)
+                AppNavHost()
             }
         }
     }
+}
 
-    @Composable
-    fun AppNavHost(context: Context) {
-        val navController = rememberNavController()
-        val authViewModel: AuthViewModel =
-            viewModel(factory = AuthViewModelFactory(AuthRepository(RetrofitInstance.api)))
-        val homeViewModel: HomeViewModel =
-            viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
+@Composable
+fun AppNavHost() {
+    val navController = rememberNavController()
+    val context = LocalContext.current
 
-        NavHost(
-            navController = navController,
-            startDestination = NavigationConstants.SPLASH_SCREEN
-        ) {
-            composable(NavigationConstants.SPLASH_SCREEN) {
-                SplashScreen(
-                    onNavigateToHome = {
-                        navController.navigate(NavigationConstants.HOME_SCREEN) {
-                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
-                        }
-                    },
-                    onNavigateToLogin = {
-                        navController.navigate(NavigationConstants.LOGIN_SCREEN) {
-                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
-                        }
-                    },
-                    viewModel = authViewModel
-                )
-            }
+    // ✅ Use hiltViewModel() if you adopt Hilt instead of manual factories
+    val authViewModel: AuthViewModel =
+        viewModel(factory = AuthViewModelFactory(AuthRepository(RetrofitInstance.api)))
+    val homeViewModel: HomeViewModel =
+        viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
 
-            composable(NavigationConstants.LOGIN_SCREEN) {
-                LoginScreen(
-                    context,
-                    onLoginSuccess = {
-                        navController.navigate(NavigationConstants.HOME_SCREEN) {
-                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
-                        }
-                    },
-                    onNavigateToRegister = {
-                        navController.navigate(NavigationConstants.REGISTER_SCREEN) {
-                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
-                        }
-                    },
-                    viewModel = authViewModel
-                )
-            }
+    NavHost(
+        navController = navController,
+        startDestination = NavigationConstants.SPLASH_SCREEN
+    ) {
+        composable(NavigationConstants.SPLASH_SCREEN) {
+            SplashScreen(
+                onNavigateToHome = {
+                    navController.navigate(NavigationConstants.HOME_SCREEN) {
+                        popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(NavigationConstants.LOGIN_SCREEN) {
+                        popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                    }
+                },
+                viewModel = authViewModel
+            )
+        }
 
-            composable(NavigationConstants.REGISTER_SCREEN) {
-                RegistrationScreen(
-                    context,
-                    onRegistrationSuccess = {
-                        navController.navigate(NavigationConstants.HOME_SCREEN) {
-                            popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
-                        }
-                    },
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    },
-                    viewModel = authViewModel
-                )
-            }
+        composable(NavigationConstants.LOGIN_SCREEN) {
+            LoginScreen(
+                context = context,
+                onLoginSuccess = {
+                    navController.navigate(NavigationConstants.HOME_SCREEN) {
+                        popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(NavigationConstants.REGISTER_SCREEN) {
+                        popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                    }
+                },
+                viewModel = authViewModel
+            )
+        }
 
-            composable(NavigationConstants.HOME_SCREEN) {
-                HomeScreen(context, navController)
-            }
+        composable(NavigationConstants.REGISTER_SCREEN) {
+            RegistrationScreen(
+                context = context,
+                onRegistrationSuccess = {
+                    navController.navigate(NavigationConstants.HOME_SCREEN) {
+                        popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = authViewModel
+            )
+        }
 
-            composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                UserProfileScreen(context,userId, viewModel = homeViewModel, {})
-            }
+        composable(NavigationConstants.HOME_SCREEN) {
+            HomeScreen(navController = navController)
+        }
+
+        composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            UserProfileScreen(
+                context = context,
+                userId = userId,
+                viewModel = homeViewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

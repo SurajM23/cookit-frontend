@@ -1,27 +1,41 @@
 package com.example.cookit.data.network
 
 import com.example.cookit.model.RecipeFeedResponse
+import com.example.cookit.model.SimpleMessageResponse
+import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 
 class HomeRepository(private val api: ApiService) {
-    suspend fun getUserSuggestions(token: String): Response<List<UserSuggestion>> {
-        return api.getUserSuggestions(token = token)
+
+    suspend fun getUserSuggestions(): Response<List<UserSuggestion>> {
+        return api.getUserSuggestions()
     }
 
-    suspend fun followUser(token: String, userId: String): Response<Unit> {
-        return api.followUser(token = token, userId = userId)
+    suspend fun getRecipeFeed(page: Int): Response<RecipeFeedResponse> {
+        return api.getRecipeFeed(page)
     }
 
-    suspend fun getRecipeFeed(token: String?,page: Int): Response<RecipeFeedResponse> {
-        return api.getRecipeFeed(token = token, page = page)
+    suspend fun getUserProfile(userId: String): Response<UserProfile> {
+        return api.getUserProfile(userId)
     }
 
-    suspend fun getUserProfile(token: String?, userId: String) = api.getUserProfile(token, userId)
+    suspend fun getUserRecipes(
+        userId: String,
+        page: Int
+    ): Response<RecipeFeedResponse> {
+        return api.getUserRecipes(userId, page)
+    }
 
-    suspend fun getUserRecipes(token: String?, userId: String, page: Int) =
-        api.getUserRecipes(token, userId, page)
+    suspend fun getUserById(userId: String): Response<UserProfile> {
+        return api.getUserById(userId)
+    }
 
-    suspend fun getUserById(userId: String) = api.getUserById(userId)
+    suspend fun followUser(userId: String): Response<SimpleMessageResponse> {
+        return api.followUser(userId)
+    }
 
+    suspend fun unfollowUser(userId: String): Response<SimpleMessageResponse> {
+        return api.unfollowUser(userId)
+    }
 }

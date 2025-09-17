@@ -4,26 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
-class PrefManager(context: Context) {
-    companion object {
-        private const val PREF_NAME = "cookit_prefs"
-        private const val KEY_TOKEN = "auth_token"
-        private const val KEY_USER_NAME = "user_name"
-        private const val KEY_USER_ID = "user_id"
-        private const val KEY_USER_EMAIL = "user_email"
+object PrefManager {
 
-        @Volatile
-        private var INSTANCE: PrefManager? = null
+    private const val PREF_NAME = "cookit_prefs"
+    private const val KEY_TOKEN = "auth_token"
+    private const val KEY_USER_NAME = "user_name"
+    private const val KEY_USER_ID = "user_id"
+    private const val KEY_USER_EMAIL = "user_email"
 
-        fun getInstance(context: Context): PrefManager {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: PrefManager(context.applicationContext).also { INSTANCE = it }
-            }
-        }
+    private lateinit var prefs: SharedPreferences
+
+    fun init(context: Context) {
+        prefs = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
-
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
     fun saveToken(token: String) = prefs.edit { putString(KEY_TOKEN, token) }
     fun getToken(): String? = prefs.getString(KEY_TOKEN, null)

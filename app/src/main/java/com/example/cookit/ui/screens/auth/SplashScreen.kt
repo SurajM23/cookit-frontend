@@ -74,12 +74,10 @@ fun SplashScreen(
 //        delay(700)
         showAppName = true
 //        delay(1500)
-        // Replace PrefManager with your preferences implementation
-        val prefs = PrefManager.getInstance(context)
-        val isLoggedIn = !prefs.getToken().isNullOrEmpty()
-                && !prefs.getUserId().isNullOrEmpty()
-                && !prefs.getUserEmail().isNullOrEmpty()
-                && !prefs.getUserName().isNullOrEmpty()
+        val isLoggedIn = !PrefManager.getToken().isNullOrEmpty()
+                && !PrefManager.getUserId().isNullOrEmpty()
+                && !PrefManager.getUserEmail().isNullOrEmpty()
+                && !PrefManager.getUserName().isNullOrEmpty()
 
         if (isLoggedIn) {
             onNavigateToHome()
