@@ -120,47 +120,21 @@ fun ProfileTabContent(
             viewModel.getRecipeFeed(token, userId, 1)
         }
     ) {
-        Column(
-            Modifier
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .padding(horizontal = 8.dp),
+            state = gridState,
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            when (profileState) {
-                is ApiResult.Loading -> {
-                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                is ApiResult.Error -> {
-                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text((profileState as ApiResult.Error).message)
-                    }
-                }
-
-                is ApiResult.Success -> {
-                    val profile = (profileState as ApiResult.Success<UserProfile>).data
-                    ProfileHeader(profile)
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                state = gridState,
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(allRecipes) { recipe ->
-                    RecipeGridItem(recipe)
-                }
-                if (feedState is ApiResult.Loading && currentPage > 1) {
-                    item(span = { GridItemSpan(2) }) {
+            // Header as first full-span item
+            item(span = { GridItemSpan(2) }) {
+                when (profileState) {
+                    is ApiResult.Loading -> {
                         Box(
                             Modifier
                                 .fillMaxWidth()
@@ -170,9 +144,45 @@ fun ProfileTabContent(
                             CircularProgressIndicator()
                         }
                     }
+
+                    is ApiResult.Error -> {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text((profileState as ApiResult.Error).message)
+                        }
+                    }
+
+                    is ApiResult.Success -> {
+                        val profile = (profileState as ApiResult.Success<UserProfile>).data
+                        ProfileHeader(profile, postCount = allRecipes.size)
+                    }
+                }
+            }
+
+            // User posts (grid items)
+            items(allRecipes) { recipe ->
+                RecipeGridItem(recipe)
+            }
+
+            // Loading indicator at bottom
+            if (feedState is ApiResult.Loading && currentPage > 1) {
+                item(span = { GridItemSpan(2) }) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
+
     }
 }
 

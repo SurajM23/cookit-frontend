@@ -104,7 +104,7 @@ fun HomeTabContent(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(0.dp,12.dp),
+                        contentPadding = PaddingValues(4.dp,12.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item {
