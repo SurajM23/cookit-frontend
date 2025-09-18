@@ -44,4 +44,8 @@ class HomeRepository(private val api: ApiService) {
         return api.getRecipeById(recipeId)
     }
 
+    suspend fun getRecipeLiked(recipeId: String,like : String): Response<SimpleMessageResponse> {
+        return api.getRecipeLiked(recipeId,like)
+    }
+
 }

@@ -106,7 +106,7 @@ fun RecipeScreen(
 
                 is ApiResult.Success<*> -> {
                     val recipe = (recipeState as ApiResult.Success<RecipeResponse>).data.recipe
-                    RecipeContent(navController,recipe)
+                    RecipeContent(navController,recipe,viewModel,recipeId)
                 }
             }
         }
@@ -114,7 +114,7 @@ fun RecipeScreen(
 }
 
 @Composable
-fun RecipeContent(navController: NavController,recipe: Recipe) {
+fun RecipeContent(navController: NavController,recipe: Recipe, viewModel: HomeViewModel,recipeId: String) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -219,7 +219,7 @@ fun RecipeContent(navController: NavController,recipe: Recipe) {
                                 )
                             }
                         }
-                        LikeButton(recipe.likeCount)
+                        LikeButton(recipe.likeCount, viewModel =viewModel, recipeId =recipeId)
                     }
 
                     Spacer(Modifier.height(10.dp))
@@ -304,14 +304,18 @@ fun RecipeContent(navController: NavController,recipe: Recipe) {
 
 // LikeButton composable remains unchanged
 @Composable
-fun LikeButton(likeCount: Int) {
+fun LikeButton(likeCount: Int, viewModel: HomeViewModel,recipeId: String) {
+    val likeState by viewModel.recipeLikedResponse.collectAsState()
     var liked by remember { mutableStateOf(false) }
     val iconColor by animateColorAsState(if (liked) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant)
     val countAnim by animateIntAsState(if (liked) likeCount + 1 else likeCount)
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { liked = !liked }) {
+        IconButton(onClick = {
+            liked = !liked
+           if (liked) viewModel.getRecipeLiked(recipeId = recipeId,like = true) else viewModel.getRecipeLiked(recipeId = recipeId,like = false)
+        }) {
             Icon(Icons.Default.Favorite, contentDescription = "Like", tint = iconColor)
         }
         Text("$countAnim", fontWeight = FontWeight.SemiBold)

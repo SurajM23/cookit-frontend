@@ -136,7 +136,7 @@ class HomeViewModel(
 
 
 
-    fun getRecipeById(recipeId: String) {   
+    fun getRecipeById(recipeId: String) {
         _profileState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
@@ -150,6 +150,28 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 _recipeState.value = ApiResult.Error(e.message ?: "Network error")
+            }
+        }
+    }
+
+    private val _recipeLikedResponse=
+        MutableStateFlow<ApiResult<SimpleMessageResponse>>(ApiResult.Loading)
+    val recipeLikedResponse: StateFlow<ApiResult<SimpleMessageResponse>> = _recipeLikedResponse
+
+    fun getRecipeLiked(recipeId: String,like: Boolean) {
+        _profileState.value = ApiResult.Loading
+        viewModelScope.launch {
+            try {
+                _recipeLikedResponse.value = ApiResult.Loading
+                val response =if (like) repository.getRecipeLiked(recipeId,"unlike") else repository.getRecipeLiked(recipeId,"like")
+                if (response.isSuccessful && response.body() != null) {
+                    _recipeLikedResponse.value = ApiResult.Success(response.body()!!)
+                } else {
+                    _recipeLikedResponse.value =
+                        ApiResult.Error(response.message() ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _recipeLikedResponse.value = ApiResult.Error(e.message ?: "Network error")
             }
         }
     }

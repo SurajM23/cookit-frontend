@@ -73,4 +73,10 @@ interface ApiService {
         @Path("recipeId") recipeId: String,
     ): Response<RecipeResponse>
 
+    @GET("recipes/{recipeId}/{like}")
+    suspend fun getRecipeLiked(
+        @Path("like") like: String,
+        @Path("recipeId") recipeId: String,
+    ): Response<SimpleMessageResponse>
+
 }
