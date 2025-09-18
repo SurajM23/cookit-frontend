@@ -99,7 +99,7 @@ fun ProfileContent(
     LaunchedEffect(followAction) {
         if (followAction is ApiResult.Success) {
             val msg = (followAction as ApiResult.Success<SimpleMessageResponse>).data.message
-            action = if (msg.contains("unfollowed", true)) "follow" else "unfollow"
+            action = if (msg.contains("unfollow")) "follow" else "unfollow"
         }
     }
 

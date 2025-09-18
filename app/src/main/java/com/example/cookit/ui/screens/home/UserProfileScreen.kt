@@ -5,11 +5,10 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -33,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
-import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
+import com.example.cookit.ui.composables.CookitActionButton
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -62,7 +61,7 @@ fun UserProfileScreen(
         currentPage = 1
         isEndReached = false
         viewModel.getUserProfile(userId)
-        viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
+        viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
     }
 
     // Append new recipes
@@ -77,9 +76,8 @@ fun UserProfileScreen(
     // Update follow/unfollow button
     LaunchedEffect(followAction) {
         if (followAction is ApiResult.Success) {
-            action = if ((followAction as ApiResult.Success<SimpleMessageResponse>).data.message
-                    .contains("unfollowed", true)
-            ) "follow" else "unfollow"
+            viewModel.getUserProfile(userId)
+            viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
         }
     }
 
@@ -92,7 +90,7 @@ fun UserProfileScreen(
                     feedState !is ApiResult.Loading
                 ) {
                     currentPage++
-                    viewModel.getUserRecipes(PrefManager.getUserId() ?: "",currentPage)
+                    viewModel.getUserRecipes(PrefManager.getUserId() ?: "", currentPage)
                 }
             }
     }
@@ -105,7 +103,7 @@ fun UserProfileScreen(
             currentPage = 1
             isEndReached = false
             viewModel.getUserProfile(userId)
-            viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
+            viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
         }
     ) {
         LazyVerticalGrid(
@@ -130,19 +128,20 @@ fun UserProfileScreen(
 
                     is ApiResult.Success -> {
                         val profile = (profileState as ApiResult.Success<UserProfile>).data
-                        action = if (profile.followers.contains(
-                                PrefManager.getUserId()
+                        action =
+                            if (profile.followers.contains(PrefManager.getUserId())) "unfollow" else "follow"
+                        Column {
+                            ProfileHeader(profile = profile, postCount = allRecipes.size)
+                            CookitActionButton(
+                                text = action,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                onClick = {
+                                    viewModel.followUser(userId, action == "follow")
+                                }
                             )
-                        ) "unfollow" else "follow"
-
-                        ProfileHeader(
-                            profile = profile,
-                            postCount = allRecipes.size,
-                            isCurrentUser = true,
-                            action = action,
-                            onActionClick = { viewModel.followUser(userId, action == "follow") }
-                        )
-                        Spacer(Modifier.height(8.dp))
+                        }
                     }
                 }
             }

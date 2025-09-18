@@ -1,6 +1,7 @@
 package com.example.cookit.data.network
 
 import com.example.cookit.model.RecipeFeedResponse
+import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
@@ -38,4 +39,9 @@ class HomeRepository(private val api: ApiService) {
     suspend fun unfollowUser(userId: String): Response<SimpleMessageResponse> {
         return api.unfollowUser(userId)
     }
+
+    suspend fun getRecipeById(recipeId: String): Response<RecipeResponse> {
+        return api.getRecipeById(recipeId)
+    }
+
 }

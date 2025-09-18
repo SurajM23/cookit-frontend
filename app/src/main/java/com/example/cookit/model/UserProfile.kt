@@ -7,7 +7,7 @@ data class UserProfile(
     val email: String = "",
     val avatarUrl: String = "",
     val bio: String = "",
-    val followers: List<String> = emptyList(),
+    var followers: List<String> = emptyList(),
     val following: List<String> = emptyList(),
     val followersCount: Int = 0,
     val followingCount: Int = 0,

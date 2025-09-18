@@ -69,9 +69,6 @@ fun ProfileHeaderSection(
             ProfileHeader(
                 profile = profile,
                 postCount = postCount,
-                isCurrentUser = isCurrentUser,
-                action = action,
-                onActionClick = onActionClick
             )
             Spacer(Modifier.height(8.dp))
         }
@@ -81,10 +78,7 @@ fun ProfileHeaderSection(
 @Composable
 fun ProfileHeader(
     profile: UserProfile,
-    postCount: Int,
-    isCurrentUser: Boolean,
-    action: String,
-    onActionClick: () -> Unit
+    postCount: Int
 ) {
     Column(
         modifier = Modifier
@@ -110,13 +104,6 @@ fun ProfileHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-            )
-        }
-
-        if (isCurrentUser) {
-            CookitActionButton(
-                text = if (action == "follow") "Follow" else "Unfollow",
-                onActionClick
             )
         }
     }

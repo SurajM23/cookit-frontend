@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.RecipeFeedResponse
+import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
@@ -97,6 +98,8 @@ class HomeViewModel(
     private val _feedState2 = MutableStateFlow<ApiResult<RecipeFeedResponse>>(ApiResult.Loading)
     val feedState2: StateFlow<ApiResult<RecipeFeedResponse>> = _feedState2
 
+    private val _recipeState = MutableStateFlow<ApiResult<RecipeResponse>>(ApiResult.Loading)
+    val recipeState: StateFlow<ApiResult<RecipeResponse>> = _recipeState
     fun getUserProfile(userId: String) {
         _profileState.value = ApiResult.Loading
         viewModelScope.launch {
@@ -127,6 +130,25 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 _feedState2.value = ApiResult.Error(e.message ?: "Network error")
+            }
+        }
+    }
+
+
+
+    fun getRecipeById(recipeId: String) {
+        _profileState.value = ApiResult.Loading
+        viewModelScope.launch {
+            try {
+                val response = repository.getRecipeById(recipeId)
+                if (response.isSuccessful && response.body() != null) {
+                    _recipeState.value = ApiResult.Success(response.body()!!)
+                } else {
+                    _recipeState.value =
+                        ApiResult.Error(response.message() ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _recipeState.value = ApiResult.Error(e.message ?: "Network error")
             }
         }
     }

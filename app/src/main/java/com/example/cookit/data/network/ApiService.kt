@@ -3,6 +3,7 @@ package com.example.cookit.data.network
 import com.example.cookit.model.AuthResponse
 import com.example.cookit.model.LoginRequest
 import com.example.cookit.model.RecipeFeedResponse
+import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.RegisterRequest
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
@@ -66,5 +67,10 @@ interface ApiService {
     suspend fun getUserById(
         @Path("userId") userId: String,
     ): Response<UserProfile>
+
+    @GET("recipes/{recipeId}")
+    suspend fun getRecipeById(
+        @Path("recipeId") recipeId: String,
+    ): Response<RecipeResponse>
 
 }
