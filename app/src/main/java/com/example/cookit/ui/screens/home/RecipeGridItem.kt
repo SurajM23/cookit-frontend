@@ -17,8 +17,8 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.Recipe
 
 @Composable
-fun RecipeGridItem(recipe: Recipe) {
-    Card(Modifier.fillMaxWidth()) {
+fun RecipeGridItem(recipe: Recipe, onClick: () -> Unit) {
+    Card(onClick = onClick, Modifier.fillMaxWidth()) {
         Column(Modifier.padding(8.dp)) {
             AsyncImage(
                 model = recipe.imageUrl,

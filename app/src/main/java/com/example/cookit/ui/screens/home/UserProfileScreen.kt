@@ -29,11 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.ui.composables.CookitActionButton
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -41,7 +43,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun UserProfileScreen(
-    context: Context,
+    navController: NavController,
     userId: String,
     viewModel: HomeViewModel,
     onBack: () -> Unit
@@ -147,7 +149,14 @@ fun UserProfileScreen(
             }
 
             // Recipes
-            items(allRecipes) { recipe -> RecipeGridItem(recipe) }
+            items(allRecipes) { recipe -> RecipeGridItem(recipe,{
+                navController.navigate(
+                    NavigationConstants.USER_RECIPE_ROUTE.replace(
+                        "{recipeId}",
+                        recipe._id
+                    )
+                )
+            }) }
 
             // Pagination loading
             if (feedState is ApiResult.Loading && currentPage > 1) {

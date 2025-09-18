@@ -48,7 +48,7 @@ fun HomeScreen(
                 1 -> SearchTabContent()
                 2 -> AddTabContent()
                 3 -> FavoritesTabContent()
-                4 -> ProfileContent(viewModel = homeViewModel)
+                4 -> ProfileContent(navController,viewModel = homeViewModel)
                 else -> HomeTabContent(navController,homeViewModel)
             }
         }

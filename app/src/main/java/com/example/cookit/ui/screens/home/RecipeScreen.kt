@@ -91,6 +91,7 @@ fun RecipeScreen(
                 is ApiResult.Loading -> {
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
+
                 is ApiResult.Error -> {
                     Text(
                         (recipeState as ApiResult.Error).message,
@@ -99,6 +100,7 @@ fun RecipeScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
+
                 is ApiResult.Success<*> -> {
                     val recipe = (recipeState as ApiResult.Success<RecipeResponse>).data.recipe
                     RecipeContent(recipe)

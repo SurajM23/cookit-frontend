@@ -11,7 +11,7 @@ object NavigationConstants {
     const val FAVORITES_TAB = "FAVOURITES"
     const val PROFILE_TAB = "PROFILE"
     const val USER_PROFILE_ROUTE = "user_profile/{userId}"
-    const val USER_RECIPE_ROUTE = "user_profile/{recipeId}"
+    const val USER_RECIPE_ROUTE = "user_recipe/{recipeId}"
     const val ADD_RECIPE_SCREEN = "add_recipe_screen"
 
 }

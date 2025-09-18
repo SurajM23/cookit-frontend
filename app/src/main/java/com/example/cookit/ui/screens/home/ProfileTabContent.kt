@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
@@ -50,7 +51,9 @@ import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.ui.composables.CookitActionButton
+import com.example.cookit.ui.composables.RecipeCard
 import com.example.cookit.ui.theme.PrimaryColor
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -61,6 +64,7 @@ import compose.icons.fontawesomeicons.regular.User
 
 @Composable
 fun ProfileContent(
+    navController: NavController,
     viewModel: HomeViewModel,
     isCurrentUser: Boolean = false,
     onActionClick: (String) -> Unit = {}
@@ -83,7 +87,7 @@ fun ProfileContent(
         currentPage = 1
         isEndReached = false
         viewModel.getUserProfile(PrefManager.getUserId() ?: "")
-        viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
+        viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
     }
 
     // Recipes update
@@ -112,7 +116,7 @@ fun ProfileContent(
                     feedState !is ApiResult.Loading
                 ) {
                     currentPage++
-                    viewModel.getUserRecipes(PrefManager.getUserId() ?: "",currentPage)
+                    viewModel.getUserRecipes(PrefManager.getUserId() ?: "", currentPage)
                 }
             }
     }
@@ -123,7 +127,7 @@ fun ProfileContent(
             currentPage = 1
             isEndReached = false
             viewModel.getUserProfile(PrefManager.getUserId() ?: "")
-            viewModel.getUserRecipes(PrefManager.getUserId() ?: "",1)
+            viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
         }
     ) {
         LazyVerticalGrid(
@@ -148,7 +152,14 @@ fun ProfileContent(
             }
 
             items(allRecipes) { recipe ->
-                RecipeGridItem(recipe)
+                RecipeGridItem(recipe, {
+                    navController.navigate(
+                        NavigationConstants.USER_RECIPE_ROUTE.replace(
+                            "{recipeId}",
+                            recipe._id
+                        )
+                    )
+                })
             }
 
             if (feedState is ApiResult.Loading && currentPage > 1) {
