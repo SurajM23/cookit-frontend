@@ -20,6 +20,7 @@ import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.screens.auth.LoginScreen
 import com.example.cookit.ui.screens.auth.SplashScreen
 import com.example.cookit.ui.screens.home.HomeScreen
+import com.example.cookit.ui.screens.home.RecipeScreen
 import com.example.cookit.ui.screens.home.UserProfileScreen
 import com.example.cookit.ui.theme.CookITTheme
 import com.example.cookit.utils.NavigationConstants
@@ -106,11 +107,10 @@ fun AppNavHost() {
             HomeScreen(navController = navController)
         }
 
-        composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            UserProfileScreen(
-                context = context,
-                userId = userId,
+        composable(NavigationConstants.USER_RECIPE_ROUTE) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId") ?: ""
+            RecipeScreen(
+                recipeId = recipeId,
                 viewModel = homeViewModel,
                 onBack = { navController.popBackStack() }
             )

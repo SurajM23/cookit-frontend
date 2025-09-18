@@ -29,8 +29,9 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.Recipe
 
 @Composable
-fun RecipeCard(recipe: Recipe) {
+fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
     Card(
+        onClick = { onClick() },
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp), // Card height is your fixed height

@@ -1,4 +1,5 @@
 [versions]
+accompanistFlowlayout = "<version>"
 accompanistNavigationAnimation = "0.36.0"
 agp = "8.13.0"
 coilCompose = "2.7.0"
@@ -24,6 +25,7 @@ foundation = "1.9.0"
 uiText = "1.9.1"
 
 [libraries]
+accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistNavigationAnimation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

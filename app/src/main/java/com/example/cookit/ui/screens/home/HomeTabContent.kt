@@ -66,9 +66,11 @@ fun HomeTabContent(
         }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = {
@@ -108,7 +110,14 @@ fun HomeTabContent(
                                 (feedState as ApiResult.Success<RecipeFeedResponse>).data.totalPages
 
                             itemsIndexed(recipes) { index, recipe ->
-                                RecipeCard(recipe)
+                                RecipeCard(recipe, {
+                                    navController.navigate(
+                                        NavigationConstants.USER_RECIPE_ROUTE.replace(
+                                            "{recipeId}",
+                                            recipe._id
+                                        )
+                                    )
+                                })
 
                                 // Pagination
                                 if (index >= recipes.lastIndex - 2 && !endReached && currentPage < totalPages) {
