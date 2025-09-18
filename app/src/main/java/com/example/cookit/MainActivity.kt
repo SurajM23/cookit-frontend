@@ -19,6 +19,7 @@ import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.screens.auth.LoginScreen
 import com.example.cookit.ui.screens.auth.SplashScreen
+import com.example.cookit.ui.screens.home.ExploreScreen
 import com.example.cookit.ui.screens.home.HomeScreen
 import com.example.cookit.ui.screens.home.RecipeScreen
 import com.example.cookit.ui.screens.home.UserProfileScreen
@@ -127,5 +128,12 @@ fun AppNavHost() {
                 }
             )
         }
+
+        composable(NavigationConstants.EXPLORE_SCREEN) { backStackEntry ->
+            ExploreScreen(navController = navController, homeViewModel, {
+                navController.popBackStack()
+            })
+        }
     }
 }
+

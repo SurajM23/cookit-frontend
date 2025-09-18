@@ -1,5 +1,6 @@
 package com.example.cookit.data.network
 
+import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
@@ -47,5 +48,11 @@ class HomeRepository(private val api: ApiService) {
     suspend fun getRecipeLiked(recipeId: String,like : String): Response<SimpleMessageResponse> {
         return api.getRecipeLiked(recipeId,like)
     }
+
+    suspend fun getAllRecipe(page : Int): Response<AllRecipeResponse> {
+        return api.getAllRecipe(page)
+    }
+
+
 
 }
