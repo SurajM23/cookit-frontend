@@ -104,7 +104,7 @@ fun AppNavHost() {
         }
 
         composable(NavigationConstants.HOME_SCREEN) {
-            navController.popBackStack()
+            navController.popBackStack(NavigationConstants.USER_RECIPE_ROUTE,true)
             HomeScreen(navController = navController)
         }
 
