@@ -63,7 +63,8 @@ fun UserProfileScreen(
         currentPage = 1
         isEndReached = false
         viewModel.getUserProfile(userId)
-        viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
+        allRecipes = listOf()
+        viewModel.getUserRecipes(userId, 1)
     }
 
     // Append new recipes
@@ -79,7 +80,8 @@ fun UserProfileScreen(
     LaunchedEffect(followAction) {
         if (followAction is ApiResult.Success) {
             viewModel.getUserProfile(userId)
-            viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
+            allRecipes = listOf()
+            viewModel.getUserRecipes(userId, 1)
         }
     }
 
@@ -105,7 +107,7 @@ fun UserProfileScreen(
             currentPage = 1
             isEndReached = false
             viewModel.getUserProfile(userId)
-            viewModel.getUserRecipes(PrefManager.getUserId() ?: "", 1)
+            viewModel.getUserRecipes(userId, 1)
         }
     ) {
         LazyVerticalGrid(

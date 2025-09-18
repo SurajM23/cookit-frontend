@@ -50,15 +50,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeResponse
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeScreen(
+    navController: NavController,
     recipeId: String,
     viewModel: HomeViewModel,
     onBack: () -> Unit
@@ -103,7 +106,7 @@ fun RecipeScreen(
 
                 is ApiResult.Success<*> -> {
                     val recipe = (recipeState as ApiResult.Success<RecipeResponse>).data.recipe
-                    RecipeContent(recipe)
+                    RecipeContent(navController,recipe)
                 }
             }
         }
@@ -111,7 +114,7 @@ fun RecipeScreen(
 }
 
 @Composable
-fun RecipeContent(recipe: Recipe) {
+fun RecipeContent(navController: NavController,recipe: Recipe) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -180,32 +183,41 @@ fun RecipeContent(recipe: Recipe) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                        Card(
+                            onClick = {
+                                navController.navigate(
+                                    NavigationConstants.USER_PROFILE_ROUTE.replace("{userId}", recipe.author._id)
+                                )
+                            },
+                            shape = RoundedCornerShape(50),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
                             modifier = Modifier
-                                .clip(RoundedCornerShape(50))
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                .padding(horizontal = 2.dp, vertical = 2.dp)
+                                .padding(vertical = 2.dp, horizontal = 2.dp)
                         ) {
-                            AsyncImage(
-                                model = recipe.author.avatarUrl,
-                                contentDescription = "Author avatar",
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                recipe.author.name,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                "by Author",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                AsyncImage(
+                                    model = recipe.author.avatarUrl,
+                                    contentDescription = "Author avatar",
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    recipe.author.name,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    "by Author",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                         LikeButton(recipe.likeCount)
                     }

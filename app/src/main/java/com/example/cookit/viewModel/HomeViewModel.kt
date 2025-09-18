@@ -136,10 +136,11 @@ class HomeViewModel(
 
 
 
-    fun getRecipeById(recipeId: String) {
+    fun getRecipeById(recipeId: String) {   
         _profileState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
+                _recipeState.value = ApiResult.Loading
                 val response = repository.getRecipeById(recipeId)
                 if (response.isSuccessful && response.body() != null) {
                     _recipeState.value = ApiResult.Success(response.body()!!)

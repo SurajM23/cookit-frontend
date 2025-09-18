@@ -104,7 +104,6 @@ fun AppNavHost() {
         }
 
         composable(NavigationConstants.HOME_SCREEN) {
-            navController.popBackStack(NavigationConstants.USER_RECIPE_ROUTE,true)
             HomeScreen(navController = navController)
         }
 
@@ -120,9 +119,12 @@ fun AppNavHost() {
         composable(NavigationConstants.USER_RECIPE_ROUTE) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getString("recipeId") ?: ""
             RecipeScreen(
+                navController = navController,
                 recipeId = recipeId,
                 viewModel = homeViewModel,
-                onBack = { navController.popBackStack() }
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }
