@@ -1,6 +1,5 @@
 package com.example.cookit.ui.screens.home
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,13 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.cookit.data.network.HomeRepository
-import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.navigation.BottomNavBar
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
-import com.example.cookit.viewModel.HomeViewModelFactory
+
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -31,7 +28,7 @@ fun HomeScreen(
                 selectedIndex = selectedIndex,
                 onItemSelected = { index ->
                     selectedIndex = index
-                    if (index == 2) navController.navigate("add_screen_route")
+                    if (index == 2) navController.navigate(NavigationConstants.ADD_RECIPE_SCREEN)
                 }
             )
         }
@@ -44,7 +41,7 @@ fun HomeScreen(
             when (selectedIndex) {
                 0 -> HomeTabContent(navController,  homeViewModel)
                 1 -> ExploreScreen(navController,homeViewModel)
-                2 -> AddTabContent()
+                2 -> {}
                 3 -> FavoritesTabContent()
                 4 -> ProfileContent(navController,viewModel = homeViewModel)
                 else -> HomeTabContent(navController,homeViewModel)
@@ -53,7 +50,4 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun AddTabContent() {
-    // Placeholder for Add tab content
-}
+

@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.cookit.data.network.AuthRepository
 import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.data.network.RetrofitInstance
+import com.example.cookit.ui.screens.addPost.AddRecipePostScreen
 import com.example.cookit.ui.screens.auth.LoginScreen
 import com.example.cookit.ui.screens.auth.SplashScreen
 import com.example.cookit.ui.screens.home.ExploreScreen
@@ -134,6 +135,9 @@ fun AppNavHost() {
 
         composable(NavigationConstants.EXPLORE_SCREEN) { backStackEntry ->
             ExploreScreen(navController = navController, homeViewModel)
+        }
+        composable(NavigationConstants.ADD_RECIPE_SCREEN) { backStackEntry ->
+            AddRecipePostScreen()
         }
     }
 }
