@@ -105,7 +105,7 @@ fun AppNavHost() {
         }
 
         composable(NavigationConstants.HOME_SCREEN) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController,homeViewModel)
         }
 
         composable(NavigationConstants.USER_PROFILE_ROUTE) { backStackEntry ->

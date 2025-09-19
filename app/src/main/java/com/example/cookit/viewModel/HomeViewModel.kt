@@ -73,7 +73,7 @@ class HomeViewModel(
     val feedState: StateFlow<ApiResult<RecipeFeedResponse>> = _feedState
 
     fun getRecipeFeed(page: Int) {
-        _feedState.value = ApiResult.Loading
+      if(page==1)  _feedState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
                 val response = repository.getRecipeFeed(page)
@@ -119,7 +119,7 @@ class HomeViewModel(
     }
 
     fun getUserRecipes(userId: String, page: Int = 1) {
-        _feedState2.value = ApiResult.Loading
+        if(page==1)  _feedState2.value = ApiResult.Loading
         viewModelScope.launch {
             try {
                 val response = repository.getUserRecipes(userId, page)

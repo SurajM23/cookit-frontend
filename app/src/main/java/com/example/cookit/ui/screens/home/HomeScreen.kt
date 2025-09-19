@@ -21,9 +21,7 @@ import com.example.cookit.viewModel.HomeViewModelFactory
 @Composable
 fun HomeScreen(
     navController: NavController,
-    homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api))
-    )
+    homeViewModel: HomeViewModel
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
 
