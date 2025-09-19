@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,9 +54,11 @@ fun HomeTabContent(
 
     var currentPage by remember { mutableIntStateOf(1) }
     var endReached by remember { mutableStateOf(false) }
+    var isLoadingMore by remember { mutableStateOf(false) }
 
-    val isLoadingFeed = feedState is ApiResult.Loading && currentPage == 1
-    val isRefreshing = isLoadingFeed
+    val listState = rememberLazyListState()
+
+    val isRefreshing = feedState is ApiResult.Loading && currentPage == 1
 
     // Initial load
     LaunchedEffect(Unit) {
@@ -63,6 +67,26 @@ fun HomeTabContent(
         }
         if (suggestionsState !is ApiResult.Success) {
             homeViewModel.getUserSuggestions()
+        }
+    }
+
+    // Pagination: trigger when user scrolls near bottom
+    LaunchedEffect(listState, feedState) {
+        snapshotFlow {
+            listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size
+        }.collect { lastVisible ->
+            val total = listState.layoutInfo.totalItemsCount
+            val totalPages =
+                if (feedState is ApiResult.Success) (feedState as ApiResult.Success<RecipeFeedResponse>).data.totalPages
+                else Int.MAX_VALUE
+
+            if (!endReached && !isLoadingMore && lastVisible >= total - 3 && currentPage < totalPages) {
+                isLoadingMore = true
+                currentPage++
+                homeViewModel.getRecipeFeed(page = currentPage)
+                if (currentPage >= totalPages) endReached = true
+                isLoadingMore = false
+            }
         }
     }
 
@@ -80,94 +104,75 @@ fun HomeTabContent(
                 homeViewModel.getUserSuggestions()
             }
         ) {
-            when (suggestionsState) {
-                is ApiResult.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(80.dp),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator(color = PrimaryColor) }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(4.dp, 12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Suggestions Row
+                item {
+                    ShowUserSuggestionsRow(navController, suggestionsState)
                 }
 
-                else -> LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(4.dp, 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    item {
-                        ShowUserSuggestionsRow(
-                            navController = navController,
-                            suggestionsState = suggestionsState
-                        )
-                    }
+                // Feed items
+                when (feedState) {
+                    is ApiResult.Success -> {
+                        val recipes =
+                            (feedState as ApiResult.Success<RecipeFeedResponse>).data.recipes
 
-                    when (feedState) {
-                        is ApiResult.Success -> {
-                            val recipes =
-                                (feedState as ApiResult.Success<RecipeFeedResponse>).data.recipes
-                            val totalPages =
-                                (feedState as ApiResult.Success<RecipeFeedResponse>).data.totalPages
-
-                            itemsIndexed(recipes) { index, recipe ->
-                                RecipeCard(recipe, {
-                                    navController.navigate(
-                                        NavigationConstants.USER_RECIPE_ROUTE.replace(
-                                            "{recipeId}",
-                                            recipe._id
-                                        )
+                        items(recipes) { recipe ->
+                            RecipeCard(recipe) {
+                                navController.navigate(
+                                    NavigationConstants.USER_RECIPE_ROUTE.replace(
+                                        "{recipeId}", recipe._id
                                     )
-                                })
-
-                                // Pagination
-                                if (index >= recipes.lastIndex - 2 && !endReached && currentPage < totalPages) {
-                                    LaunchedEffect(currentPage) {
-                                        currentPage++
-                                        homeViewModel.getRecipeFeed(page = currentPage)
-                                        if (currentPage >= totalPages) endReached = true
-                                    }
-                                }
-                            }
-
-                            if (isLoadingFeed && currentPage > 1) {
-                                item {
-                                    Box(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) { CircularProgressIndicator() }
-                                }
+                                )
                             }
                         }
 
-                        is ApiResult.Error -> {
+                        // Loader for pagination
+                        if (isLoadingMore && currentPage > 1) {
                             item {
                                 Box(
-                                    modifier = Modifier
+                                    Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 32.dp),
+                                        .padding(16.dp),
                                     contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = (feedState as ApiResult.Error).message,
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                }
-                            }
-                            if ((feedState as ApiResult.Error).message.contains(
-                                    "Unauthorized",
-                                    ignoreCase = true
-                                )
-                            ) {
-                                navController.navigate(NavigationConstants.LOGIN_SCREEN) {
-                                    popUpTo(NavigationConstants.HOME_SCREEN) { inclusive = true }
-                                }
+                                ) { CircularProgressIndicator() }
                             }
                         }
-
-                        else -> Unit
                     }
+
+                    is ApiResult.Error -> {
+                        item {
+                            ErrorBox(
+                                message = (feedState as ApiResult.Error).message,
+                                onUnauthorized = {
+                                    navController.navigate(NavigationConstants.LOGIN_SCREEN) {
+                                        popUpTo(NavigationConstants.HOME_SCREEN) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    is ApiResult.Loading -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = PrimaryColor)
+                            }
+                        }
+                    }
+
+                    else -> Unit
                 }
             }
         }
@@ -188,7 +193,9 @@ fun ShowUserSuggestionsRow(
                         .fillMaxWidth()
                         .height(80.dp),
                     contentAlignment = Alignment.Center
-                ) { Text("No users found.", color = Color.Gray) }
+                ) {
+                    Text("No users found.", color = Color.Gray)
+                }
             } else {
                 LazyRow(
                     Modifier
@@ -217,5 +224,21 @@ fun ShowUserSuggestionsRow(
         }
 
         else -> Unit
+    }
+}
+
+@Composable
+fun ErrorBox(message: String, onUnauthorized: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = message, color = MaterialTheme.colorScheme.error)
+    }
+
+    if (message.contains("Unauthorized", ignoreCase = true)) {
+        onUnauthorized()
     }
 }
