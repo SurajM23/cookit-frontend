@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,21 +20,28 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -57,11 +65,11 @@ fun ExploreScreen(
     navController: NavController,
     viewModel: HomeViewModel
 ) {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val allRecipeState by viewModel.allRecipeState.collectAsState()
 
     val gridState = rememberLazyGridState()
-    var currentPage by remember { mutableStateOf(1) }
+    var currentPage by rememberSaveable { mutableStateOf(1) }
     var allRecipes by remember { mutableStateOf(listOf<Recipe>()) }
     var isEndReached by remember { mutableStateOf(false) }
     var isLoadingMore by remember { mutableStateOf(false) }
@@ -116,85 +124,143 @@ fun ExploreScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Search Bar
-        OutlinedTextField(
+        SearchBar(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            placeholder = { Text("Search recipes...") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            singleLine = true
+                .padding(4.dp)
         )
 
         when (allRecipeState) {
             is ApiResult.Loading -> {
                 if (allRecipes.isEmpty()) {
-                    // First page loading
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
+                    return
                 }
             }
 
             is ApiResult.Error -> {
                 if (allRecipes.isEmpty()) {
-                    // Show error only if nothing is loaded
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             (allRecipeState as ApiResult.Error).message,
-                            color = Color.Red
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
+                    return
                 }
             }
 
             else -> Unit
         }
 
-        // Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            state = gridState,
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val filteredRecipes = allRecipes.filter {
-                it.title.contains(searchQuery, ignoreCase = true)
-            }
+        val filteredRecipes = remember(searchQuery, allRecipes) {
+            allRecipes.filter { it.title.contains(searchQuery, ignoreCase = true) }
+        }
 
-            items(filteredRecipes) { recipe ->
-                RecipeGridItem2(recipe = recipe) {
-                    navController.navigate(
-                        NavigationConstants.USER_RECIPE_ROUTE.replace(
-                            "{recipeId}",
-                            recipe._id
-                        )
+        if (filteredRecipes.isEmpty() && allRecipes.isNotEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    "No recipes found.",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                state = gridState,
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(filteredRecipes, key = { it._id }) { recipe ->
+                    RecipeGridItem2(
+                        recipe = recipe,
+                        onClick = {
+                            navController.navigate(
+                                NavigationConstants.USER_RECIPE_ROUTE.replace(
+                                    "{recipeId}",
+                                    recipe._id
+                                )
+                            )
+                        }
                     )
                 }
-            }
-
-            // Pagination loading indicator
-            if (isLoadingMore) {
-                item(span = { GridItemSpan(3) }) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                if (isLoadingMore) {
+                    item(span = { GridItemSpan(3) }) {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+fun SearchBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = {
+            Text(
+                text = "Search recipes...",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        trailingIcon = {
+            if (value.isNotEmpty()) {
+                IconButton(onClick = { onValueChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear search",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(8.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.primary
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+    )
+}
+
 
 @Composable
 fun RecipeGridItem2(
@@ -208,7 +274,7 @@ fun RecipeGridItem2(
             .clip(RoundedCornerShape(16.dp))
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -225,14 +291,13 @@ fun RecipeGridItem2(
             Text(
                 text = recipe.title,
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp)
             )
-
         }
     }
 }

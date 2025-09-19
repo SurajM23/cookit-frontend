@@ -12,14 +12,36 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryColor,
+    onPrimary = White,
     secondary = SecondaryColor,
-    tertiary = White
+    onSecondary = TextPrimary,
+    background = BackgroundColor,
+    onBackground = TextPrimary,
+    surface = CardBackground,
+    onSurface = TextPrimary,
+    error = ErrorRed,
+    onError = White,
+    tertiary = AccentGreen,
+    outline = DividerColor,
+    surfaceVariant = CardBackground,
+    onSurfaceVariant = TextSecondary
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryColor,
+    onPrimary = White,
     secondary = SecondaryColor,
-    tertiary = White
+    onSecondary = TextPrimary,
+    background = BackgroundColor,
+    onBackground = TextPrimary,
+    surface = CardBackground,
+    onSurface = TextPrimary,
+    error = ErrorRed,
+    onError = White,
+    tertiary = AccentGreen,
+    outline = DividerColor,
+    surfaceVariant = CardBackground,
+    onSurfaceVariant = TextSecondary
 )
 
 @Composable

@@ -58,6 +58,7 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeResponse
+import com.example.cookit.ui.theme.White
 import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 
@@ -92,7 +93,7 @@ fun RecipeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(White)
                 .padding(paddingValues)
         ) {
             when (recipeState) {
