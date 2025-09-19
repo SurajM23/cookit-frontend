@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -64,13 +66,11 @@ fun RecipeScreen(
     navController: NavController,
     recipeId: String,
     viewModel: HomeViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onLikeClick: (String) -> Unit
 ) {
     val recipeState by viewModel.recipeState.collectAsState()
-    val likeState by viewModel.recipeLikedResponse.collectAsState()
-    var liked by remember { mutableStateOf(false) }
-    val iconColor by animateColorAsState(if (liked) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant)
-
+    val likedResponse by viewModel.recipeLikedResponse.collectAsState()
 
     LaunchedEffect(recipeId) {
         viewModel.getRecipeById(recipeId)
@@ -110,211 +110,232 @@ fun RecipeScreen(
 
                 is ApiResult.Success<*> -> {
                     val recipe = (recipeState as ApiResult.Success<RecipeResponse>).data.recipe
-                    RecipeContent(navController, recipe, viewModel, recipeId)
-                }
-            }
-        }
-    }
-}
+                    val isLiked = remember { mutableStateOf(recipe.likes.isNotEmpty()) }
+                    val likeCount = remember { mutableStateOf(recipe.likeCount) }
 
-@Composable
-fun RecipeContent(
-    navController: NavController,
-    recipe: Recipe,
-    viewModel: HomeViewModel,
-    recipeId: String
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        // Image at top (outside card)
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(260.dp)
-            ) {
-                AsyncImage(
-                    model = recipe.imageUrl,
-                    contentDescription = recipe.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
-                )
-            }
-        }
-
-        // Single card with all recipe details
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    // First row: Title | LikeButton
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
-                        Text(
-                            recipe.title,
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onBackground,
-                            maxLines = 2,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.DateRange,
-                                contentDescription = "Cook time",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text("${recipe.cookTime} min", fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-
-                    // Second row: Author | Cook Time
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Card(
-                            onClick = {
-                                navController.navigate(
-                                    NavigationConstants.USER_PROFILE_ROUTE.replace(
-                                        "{userId}",
-                                        recipe.author._id
-                                    )
-                                )
-                            },
-                            shape = RoundedCornerShape(50),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                                    alpha = 0.4f
-                                )
-                            ),
-                            modifier = Modifier
-                                .padding(vertical = 2.dp, horizontal = 2.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        // Top image
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(260.dp)
                             ) {
                                 AsyncImage(
-                                    model = recipe.author.avatarUrl,
-                                    contentDescription = "Author avatar",
+                                    model = recipe.imageUrl,
+                                    contentDescription = recipe.title,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.matchParentSize()
+                                )
+
+                                // Floating like button over image
+                                IconButton(
+                                    onClick = {
+                                        isLiked.value = !isLiked.value
+                                        likeCount.value += if (isLiked.value) 1 else -1
+                                        onLikeClick(recipe._id)
+                                    },
                                     modifier = Modifier
-                                        .size(28.dp)
+                                        .align(Alignment.BottomEnd)
+                                        .padding(16.dp)
+                                        .size(50.dp)
                                         .clip(CircleShape)
-                                )
-                                Spacer(Modifier.width(8.dp))
-                                Text(
-                                    recipe.author.name,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(Modifier.width(6.dp))
-                                Text(
-                                    "by Author",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                        .background(MaterialTheme.colorScheme.surface)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isLiked.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                        contentDescription = "Like",
+                                        tint = if (isLiked.value) Color.Red else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
                             }
                         }
 
-
-                    }
-
-                    Spacer(Modifier.height(10.dp))
-
-                    Text(
-                        recipe.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Spacer(Modifier.height(18.dp))
-
-                    // Ingredients section
-                    Text(
-                        "Ingredients",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(recipe.ingredients.size) { idx ->
-                            AssistChip(
-                                onClick = {},
-                                label = { Text(recipe.ingredients[idx]) },
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                ),
-                                modifier = Modifier.height(36.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(18.dp))
-
-                    // Steps section
-                    Text(
-                        "Steps",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Column {
-                        recipe.steps.forEachIndexed { index, step ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(vertical = 6.dp)
+                        // Recipe content card
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                                elevation = CardDefaults.cardElevation(0.dp)
                             ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                        modifier = Modifier.fillMaxSize()
+                                Column(Modifier.padding(16.dp)) {
+                                    // Title + cook time
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
-                                            "${index + 1}",
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                            fontWeight = FontWeight.Bold
+                                            recipe.title,
+                                            style = MaterialTheme.typography.headlineSmall.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            maxLines = 2,
+                                            modifier = Modifier.weight(1f)
+                                        )
+
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.DateRange,
+                                                contentDescription = "Cook time",
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Text(
+                                                "${recipe.cookTime} min",
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(Modifier.height(12.dp))
+
+                                    // Likes row
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isLiked.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                            contentDescription = "Like",
+                                            tint = if (isLiked.value) Color.Red else MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            "${likeCount.value} likes",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
+
+                                    Spacer(Modifier.height(16.dp))
+
+                                    // Author chip
+                                    Card(
+                                        onClick = {
+                                            navController.navigate(
+                                                NavigationConstants.USER_PROFILE_ROUTE.replace(
+                                                    "{userId}", recipe.author._id
+                                                )
+                                            )
+                                        },
+                                        shape = RoundedCornerShape(50),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                        )
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                        ) {
+                                            AsyncImage(
+                                                model = recipe.author.avatarUrl,
+                                                contentDescription = "Author avatar",
+                                                modifier = Modifier
+                                                    .size(28.dp)
+                                                    .clip(CircleShape)
+                                            )
+                                            Spacer(Modifier.width(8.dp))
+                                            Text(
+                                                recipe.author.name,
+                                                fontWeight = FontWeight.Medium,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                            Spacer(Modifier.width(6.dp))
+                                            Text(
+                                                "by Author",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(Modifier.height(12.dp))
+
+                                    // Description
+                                    Text(
+                                        recipe.description,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+
+                                    Spacer(Modifier.height(18.dp))
+
+                                    // Ingredients
+                                    Text(
+                                        "Ingredients",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                        items(recipe.ingredients) { ingredient ->
+                                            AssistChip(
+                                                onClick = {},
+                                                label = { Text(ingredient) },
+                                                colors = AssistChipDefaults.assistChipColors(
+                                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                                ),
+                                                modifier = Modifier.height(36.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(Modifier.height(18.dp))
+
+                                    // Steps
+                                    Text(
+                                        "Steps",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    Column {
+                                        recipe.steps.forEachIndexed { index, step ->
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(vertical = 6.dp)
+                                            ) {
+                                                Surface(
+                                                    shape = CircleShape,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(28.dp)
+                                                ) {
+                                                    Box(contentAlignment = Alignment.Center) {
+                                                        Text(
+                                                            "${index + 1}",
+                                                            color = MaterialTheme.colorScheme.onPrimary,
+                                                            fontWeight = FontWeight.Bold
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(Modifier.width(12.dp))
+                                                Text(step, style = MaterialTheme.typography.bodyLarge)
+                                            }
+                                        }
+                                    }
                                 }
-                                Spacer(Modifier.width(12.dp))
-                                Text(step, style = MaterialTheme.typography.bodyLarge)
                             }
                         }
+
+                        item { Spacer(modifier = Modifier.height(28.dp)) }
                     }
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(28.dp))
         }
     }
 }

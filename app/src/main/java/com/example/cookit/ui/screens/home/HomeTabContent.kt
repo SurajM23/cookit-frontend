@@ -123,6 +123,7 @@ fun HomeTabContent(
                                 if (index >= recipes.lastIndex - 2 && !endReached && currentPage < totalPages) {
                                     LaunchedEffect(currentPage) {
                                         currentPage++
+                                        if (currentPage == 1) currentPage = currentPage + 1
                                         homeViewModel.getRecipeFeed(page = currentPage)
                                         if (currentPage >= totalPages) endReached = true
                                     }

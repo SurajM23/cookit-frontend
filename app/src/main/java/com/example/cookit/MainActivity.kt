@@ -125,14 +125,15 @@ fun AppNavHost() {
                 viewModel = homeViewModel,
                 onBack = {
                     navController.popBackStack()
+                },
+                onLikeClick = {
+                    homeViewModel.getRecipeLiked(recipeId)
                 }
             )
         }
 
         composable(NavigationConstants.EXPLORE_SCREEN) { backStackEntry ->
-            ExploreScreen(navController = navController, homeViewModel, {
-                navController.popBackStack()
-            })
+            ExploreScreen(navController = navController, homeViewModel)
         }
     }
 }

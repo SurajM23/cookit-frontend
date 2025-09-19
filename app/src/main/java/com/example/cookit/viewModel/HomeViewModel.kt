@@ -164,7 +164,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 _recipeLikedResponse.value = ApiResult.Loading
-                val response =if (like) repository.getRecipeLiked(recipeId,"unlike") else repository.getRecipeLiked(recipeId,"like")
+                val response = repository.getRecipeLiked(recipeId)
                 if (response.isSuccessful && response.body() != null) {
                     _recipeLikedResponse.value = ApiResult.Success(response.body()!!)
                 } else {

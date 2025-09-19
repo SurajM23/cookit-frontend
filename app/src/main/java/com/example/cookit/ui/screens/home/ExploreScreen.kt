@@ -48,14 +48,14 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
+import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreScreen(
     navController: NavController,
-    viewModel: HomeViewModel,
-    onRecipeClick: (String) -> Unit
+    viewModel: HomeViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val allRecipeState by viewModel.allRecipeState.collectAsState()
@@ -170,7 +170,12 @@ fun ExploreScreen(
 
             items(filteredRecipes) { recipe ->
                 RecipeGridItem2(recipe = recipe) {
-                    onRecipeClick(recipe._id)
+                    navController.navigate(
+                        NavigationConstants.USER_RECIPE_ROUTE.replace(
+                            "{recipeId}",
+                            recipe._id
+                        )
+                    )
                 }
             }
 
