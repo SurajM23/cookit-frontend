@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
+import com.example.cookit.ui.theme.PrimaryColor
 
 @Composable
 fun CookitTextField(
@@ -24,9 +25,9 @@ fun CookitTextField(
     trailingIcon: (@Composable (() -> Unit))? = null,
     textColor: Color = Color.Black,
     cursorColor: Color = Color.Black,
-    focusedBorderColor: Color = Color.Red,
+    focusedBorderColor: Color = PrimaryColor,
     unfocusedBorderColor: Color = Color.Black,
-    errorBorderColor: Color = Color.Red,
+    errorBorderColor: Color = PrimaryColor,
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(

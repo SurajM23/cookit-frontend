@@ -44,7 +44,10 @@ fun AddRecipePostScreen(homeViewModel: HomeViewModel, navController: NavHostCont
             AddRecipeStep.IMAGE -> ImageStep(
                 draft,
                 onNext = { step = AddRecipeStep.REVIEW },
-                onBack = { step = AddRecipeStep.COOK_TIME })
+                onBack = { step = AddRecipeStep.COOK_TIME },
+                onPickImage = {
+                }
+            )
 
             AddRecipeStep.REVIEW -> ReviewStep(
                 homeViewModel,
