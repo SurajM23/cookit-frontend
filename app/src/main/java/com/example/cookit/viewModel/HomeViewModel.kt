@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.ApiResult
+import com.example.cookit.model.CreateRecipeRequest
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
@@ -118,7 +119,7 @@ class HomeViewModel(
     }
 
     fun getUserRecipes(userId: String, page: Int = 1) {
-        if(page==1)  _feedState2.value = ApiResult.Loading
+        if (page == 1) _feedState2.value = ApiResult.Loading
         viewModelScope.launch {
             try {
                 val response = repository.getUserRecipes(userId, page)
@@ -133,7 +134,6 @@ class HomeViewModel(
             }
         }
     }
-
 
 
     fun getRecipeById(recipeId: String) {
@@ -154,11 +154,11 @@ class HomeViewModel(
         }
     }
 
-    private val _recipeLikedResponse=
+    private val _recipeLikedResponse =
         MutableStateFlow<ApiResult<SimpleMessageResponse>>(ApiResult.Loading)
     val recipeLikedResponse: StateFlow<ApiResult<SimpleMessageResponse>> = _recipeLikedResponse
 
-    fun getRecipeLiked(recipeId: String,like: Boolean = false) {
+    fun getRecipeLiked(recipeId: String, like: Boolean = false) {
         _profileState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
@@ -179,10 +179,10 @@ class HomeViewModel(
     private val _allRecipeState = MutableStateFlow<ApiResult<AllRecipeResponse>>(ApiResult.Loading)
     val allRecipeState: StateFlow<ApiResult<AllRecipeResponse>> = _allRecipeState
 
-    fun getAllRecipe( page: Int = 1) {
+    fun getAllRecipe(page: Int = 1) {
         viewModelScope.launch {
             try {
-                val response = repository.getAllRecipe( page)
+                val response = repository.getAllRecipe(page)
                 if (response.isSuccessful && response.body() != null) {
                     _allRecipeState.value = ApiResult.Success(response.body()!!)
                 } else {
@@ -191,6 +191,28 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 _allRecipeState.value = ApiResult.Error(e.message ?: "Network error")
+            }
+        }
+    }
+
+    private val _createRecipeResponse =
+        MutableStateFlow<ApiResult<SimpleMessageResponse>>(ApiResult.Loading)
+    val createRecipeResponse: StateFlow<ApiResult<SimpleMessageResponse>> = _createRecipeResponse
+
+    fun createRecipePost(createRecipeRequest: CreateRecipeRequest) {
+        _createRecipeResponse.value = ApiResult.Loading
+        viewModelScope.launch {
+            try {
+                _createRecipeResponse.value = ApiResult.Loading
+                val response = repository.createRecipePost(createRecipeRequest)
+                if (response.isSuccessful && response.body() != null) {
+                    _createRecipeResponse.value = ApiResult.Success(response.body()!!)
+                } else {
+                    _createRecipeResponse.value =
+                        ApiResult.Error(response.message() ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _createRecipeResponse.value = ApiResult.Error(e.message ?: "Network error")
             }
         }
     }

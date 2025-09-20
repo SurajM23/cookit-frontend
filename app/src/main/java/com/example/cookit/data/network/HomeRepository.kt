@@ -1,6 +1,7 @@
 package com.example.cookit.data.network
 
 import com.example.cookit.model.AllRecipeResponse
+import com.example.cookit.model.CreateRecipeRequest
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
@@ -52,6 +53,11 @@ class HomeRepository(private val api: ApiService) {
     suspend fun getAllRecipe(page: Int): Response<AllRecipeResponse> {
         return api.getAllRecipe(page)
     }
+
+    suspend fun createRecipePost(createRecipeRequest: CreateRecipeRequest): Response<SimpleMessageResponse> {
+        return api.createRecipePost(createRecipeRequest)
+    }
+
 
 
 }

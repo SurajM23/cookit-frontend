@@ -2,6 +2,7 @@ package com.example.cookit.data.network
 
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.AuthResponse
+import com.example.cookit.model.CreateRecipeRequest
 import com.example.cookit.model.LoginRequest
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RecipeResponse
@@ -83,5 +84,10 @@ interface ApiService {
     suspend fun getAllRecipe(
         @Query("page") page: Int
     ): Response<AllRecipeResponse>
+
+    @POST("recipes/add")
+    suspend fun createRecipePost(
+        @Body createRecipeRequest: CreateRecipeRequest
+    ): Response<SimpleMessageResponse>
 
 }

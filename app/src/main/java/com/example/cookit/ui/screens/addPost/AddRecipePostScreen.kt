@@ -10,9 +10,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.cookit.utils.NavigationConstants
+import com.example.cookit.viewModel.HomeViewModel
 
 @Composable
-fun AddRecipePostScreen() {
+fun AddRecipePostScreen(homeViewModel: HomeViewModel, navController: NavHostController) {
     var step by rememberSaveable { mutableStateOf(AddRecipeStep.TITLE) }
     var draft by rememberSaveable(stateSaver = RecipeDraftSaver) { mutableStateOf(RecipeDraft()) }
 
@@ -43,7 +46,15 @@ fun AddRecipePostScreen() {
                 onNext = { step = AddRecipeStep.REVIEW },
                 onBack = { step = AddRecipeStep.COOK_TIME })
 
-            AddRecipeStep.REVIEW -> ReviewStep(draft, onBack = { step = AddRecipeStep.IMAGE })
+            AddRecipeStep.REVIEW -> ReviewStep(
+                homeViewModel,
+                draft,
+                onBack = { step = AddRecipeStep.IMAGE },
+                onSuccessNavigate = {
+                    navController.navigate(NavigationConstants.HOME_SCREEN) {
+                        popUpTo(NavigationConstants.ADD_RECIPE_SCREEN) { inclusive = true }
+                    }
+                })
         }
     }
 }

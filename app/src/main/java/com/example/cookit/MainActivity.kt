@@ -1,9 +1,7 @@
 package com.example.cookit
 
 import RegistrationScreen
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -137,7 +135,7 @@ fun AppNavHost() {
             ExploreScreen(navController = navController, homeViewModel)
         }
         composable(NavigationConstants.ADD_RECIPE_SCREEN) { backStackEntry ->
-            AddRecipePostScreen()
+            AddRecipePostScreen(homeViewModel,navController)
         }
     }
 }
