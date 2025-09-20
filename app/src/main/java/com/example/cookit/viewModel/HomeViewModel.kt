@@ -158,7 +158,7 @@ class HomeViewModel(
         MutableStateFlow<ApiResult<SimpleMessageResponse>>(ApiResult.Loading)
     val recipeLikedResponse: StateFlow<ApiResult<SimpleMessageResponse>> = _recipeLikedResponse
 
-    fun getRecipeLiked(recipeId: String, like: Boolean = false) {
+    fun getRecipeLiked(recipeId: String) {
         _profileState.value = ApiResult.Loading
         viewModelScope.launch {
             try {
