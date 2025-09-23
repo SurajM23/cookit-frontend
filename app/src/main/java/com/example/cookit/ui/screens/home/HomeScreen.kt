@@ -41,7 +41,6 @@ fun HomeScreen(
             when (selectedIndex) {
                 0 -> HomeTabContent(navController,  homeViewModel)
                 1 -> ExploreScreen(navController,homeViewModel)
-                2 -> {}
                 3 -> FavoritesTabContent()
                 4 -> ProfileContent(navController,viewModel = homeViewModel)
                 else -> HomeTabContent(navController,homeViewModel)

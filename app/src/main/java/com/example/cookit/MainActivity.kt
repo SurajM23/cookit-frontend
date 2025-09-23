@@ -47,7 +47,6 @@ fun AppNavHost() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // ✅ Use hiltViewModel() if you adopt Hilt instead of manual factories
     val authViewModel: AuthViewModel =
         viewModel(factory = AuthViewModelFactory(AuthRepository(RetrofitInstance.api)))
     val homeViewModel: HomeViewModel =
@@ -75,7 +74,6 @@ fun AppNavHost() {
 
         composable(NavigationConstants.LOGIN_SCREEN) {
             LoginScreen(
-                context = context,
                 onLoginSuccess = {
                     navController.navigate(NavigationConstants.HOME_SCREEN) {
                         popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }
@@ -92,7 +90,6 @@ fun AppNavHost() {
 
         composable(NavigationConstants.REGISTER_SCREEN) {
             RegistrationScreen(
-                context = context,
                 onRegistrationSuccess = {
                     navController.navigate(NavigationConstants.HOME_SCREEN) {
                         popUpTo(NavigationConstants.SPLASH_SCREEN) { inclusive = true }

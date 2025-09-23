@@ -42,7 +42,6 @@ fun SplashScreen(
     onNavigateToLogin: () -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
-    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.dummyLoginApiCall()

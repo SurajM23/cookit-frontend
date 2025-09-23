@@ -1,4 +1,3 @@
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,13 +24,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.cookit.R
+import com.example.cookit.model.AuthUiState
 import com.example.cookit.model.RegisterRequest
-import com.example.cookit.utils.PrefManager
 import com.example.cookit.ui.composables.CookitActionButton
 import com.example.cookit.ui.composables.CookitTextButton
 import com.example.cookit.ui.composables.CookitTextField
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.AuthViewModel
-import com.example.cookit.model.AuthUiState
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Eye
@@ -39,7 +38,6 @@ import compose.icons.fontawesomeicons.solid.EyeSlash
 
 @Composable
 fun RegistrationScreen(
-    context: Context,
     onRegistrationSuccess: () -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: AuthViewModel

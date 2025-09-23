@@ -41,7 +41,6 @@ import compose.icons.fontawesomeicons.solid.EyeSlash
 
 @Composable
 fun LoginScreen(
-    context: Context,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
     viewModel: AuthViewModel
