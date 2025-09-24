@@ -2,15 +2,20 @@ package com.example.cookit.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.cookit.data.network.HomeRepository
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.CreateRecipeRequest
+import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
+import com.example.cookit.ui.paging.getRecipeFeedPager
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +23,9 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val repository: HomeRepository
 ) : ViewModel() {
+
+    val recipeFeed: Flow<PagingData<Recipe>> =
+        repository.getRecipeFeedPager().cachedIn(viewModelScope)
 
     // ---------- User Suggestions ----------
     private val _userSuggestions =
