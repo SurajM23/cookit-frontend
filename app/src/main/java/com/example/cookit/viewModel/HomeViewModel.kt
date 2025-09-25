@@ -2,6 +2,8 @@ package com.example.cookit.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.cookit.data.network.HomeRepository
@@ -14,6 +16,7 @@ import com.example.cookit.model.RecipeResponse
 import com.example.cookit.model.SimpleMessageResponse
 import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
+import com.example.cookit.ui.paging.RecipeFeedPagingSource
 import com.example.cookit.ui.paging.getRecipeFeedPager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,6 +102,11 @@ class HomeViewModel(
         }
     }
 
+    val recipeFeedPager = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = { RecipeFeedPagingSource(repository) }
+    ).flow
+        .cachedIn(viewModelScope)
 
     // ---------- User Profile ----------
     private val _profileState = MutableStateFlow<ApiResult<UserProfile>>(ApiResult.Loading)

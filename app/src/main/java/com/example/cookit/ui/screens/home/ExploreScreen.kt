@@ -52,10 +52,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.Recipe
+import com.example.cookit.ui.theme.PrimaryColor
+import com.example.cookit.ui.theme.SecondaryColor
+import com.example.cookit.ui.theme.White
 import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 
@@ -66,60 +71,8 @@ fun ExploreScreen(
     viewModel: HomeViewModel
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    val allRecipeState by viewModel.allRecipeState.collectAsState()
-
+    val recipes = viewModel.recipeFeedPager.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
-    var currentPage by rememberSaveable { mutableStateOf(1) }
-    var allRecipes by remember { mutableStateOf(listOf<Recipe>()) }
-    var isEndReached by remember { mutableStateOf(false) }
-    var isLoadingMore by remember { mutableStateOf(false) }
-
-    // Initial load
-    LaunchedEffect(Unit) {
-        currentPage = 1
-        isEndReached = false
-        allRecipes = emptyList()
-        viewModel.getAllRecipe(page = currentPage)
-    }
-
-    // Append new data whenever state updates
-    LaunchedEffect(allRecipeState) {
-        when (allRecipeState) {
-            is ApiResult.Success -> {
-                val newRecipes =
-                    (allRecipeState as ApiResult.Success<AllRecipeResponse>).data.recipes
-                if (currentPage == 1) {
-                    allRecipes = newRecipes
-                } else {
-                    allRecipes = allRecipes + newRecipes
-                }
-                if (newRecipes.isEmpty()) {
-                    isEndReached = true
-                }
-                isLoadingMore = false
-            }
-
-            is ApiResult.Error -> {
-                isLoadingMore = false
-            }
-
-            else -> Unit
-        }
-    }
-
-    // Infinite scroll
-    LaunchedEffect(gridState) {
-        snapshotFlow {
-            gridState.firstVisibleItemIndex + gridState.layoutInfo.visibleItemsInfo.size
-        }.collect { lastVisible ->
-            val total = gridState.layoutInfo.totalItemsCount
-            if (!isEndReached && !isLoadingMore && lastVisible >= total - 3) {
-                isLoadingMore = true
-                currentPage++
-                viewModel.getAllRecipe(page = currentPage)
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -131,40 +84,38 @@ fun ExploreScreen(
             onValueChange = { searchQuery = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp)
+                .background(PrimaryColor)
         )
 
-        when (allRecipeState) {
-            is ApiResult.Loading -> {
-                if (allRecipes.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                    return
-                }
+        // Initial loading state
+        if (recipes.itemCount == 0 && recipes.loadState.refresh is LoadState.Loading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
-
-            is ApiResult.Error -> {
-                if (allRecipes.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            (allRecipeState as ApiResult.Error).message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                    return
-                }
-            }
-
-            else -> Unit
+            return
         }
 
-        val filteredRecipes = remember(searchQuery, allRecipes) {
-            allRecipes.filter { it.title.contains(searchQuery, ignoreCase = true) }
+        // Error state
+        if (recipes.loadState.refresh is LoadState.Error) {
+            val error = (recipes.loadState.refresh as LoadState.Error).error
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = error.localizedMessage ?: "Something went wrong",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            return
         }
 
-        if (filteredRecipes.isEmpty() && allRecipes.isNotEmpty()) {
+        // Filtered list
+        val filteredRecipes = remember(searchQuery, recipes.itemSnapshotList) {
+            recipes.itemSnapshotList.items.filter {
+                it.title.contains(searchQuery, ignoreCase = true)
+            }
+        }
+
+        if (filteredRecipes.isEmpty() && recipes.itemCount > 0) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     "No recipes found.",
@@ -174,12 +125,14 @@ fun ExploreScreen(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(2),
                 state = gridState,
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(White)
             ) {
                 items(filteredRecipes, key = { it._id }) { recipe ->
                     RecipeGridItem2(
@@ -194,7 +147,7 @@ fun ExploreScreen(
                         }
                     )
                 }
-                if (isLoadingMore) {
+                if (recipes.loadState.append is LoadState.Loading) {
                     item(span = { GridItemSpan(3) }) {
                         Box(
                             Modifier
@@ -210,6 +163,7 @@ fun ExploreScreen(
         }
     }
 }
+
 
 @Composable
 fun SearchBar(
@@ -230,7 +184,7 @@ fun SearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.primary
+                tint = PrimaryColor
             )
         },
         trailingIcon = {
@@ -239,7 +193,7 @@ fun SearchBar(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Clear search",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = PrimaryColor
                     )
                 }
             }
@@ -247,17 +201,18 @@ fun SearchBar(
         singleLine = true,
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-            cursorColor = MaterialTheme.colorScheme.primary
+            focusedContainerColor = White,
+            unfocusedContainerColor = White,
+            focusedBorderColor = SecondaryColor,
+            unfocusedBorderColor = White,
+            focusedTextColor = PrimaryColor,
+            unfocusedTextColor = SecondaryColor,
+            cursorColor = PrimaryColor
         ),
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp)
+            .background(PrimaryColor)
     )
 }
 
@@ -272,6 +227,7 @@ fun RecipeGridItem2(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(16.dp))
+            .background(PrimaryColor)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

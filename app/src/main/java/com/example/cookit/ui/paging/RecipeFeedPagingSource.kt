@@ -18,7 +18,7 @@ class RecipeFeedPagingSource(private val repository: HomeRepository) : PagingSou
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Recipe> {
         return try {
             val page = params.key ?: 1
-            val response = repository.getRecipeFeed(page)
+            val response = repository.getAllRecipe(page)
 
             if (response.isSuccessful) {
                 val body = response.body()
