@@ -230,7 +230,7 @@ fun RecipeGridItem2(
             .background(PrimaryColor)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = PrimaryColor),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -247,7 +247,7 @@ fun RecipeGridItem2(
             Text(
                 text = recipe.title,
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = White,
                 maxLines = 2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier

@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.cookit.model.Recipe
+import com.example.cookit.ui.theme.PrimaryColor
 
 @Composable
 fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
@@ -37,7 +38,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
             .height(180.dp), // Card height is your fixed height
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(PrimaryColor)) {
             // Recipe Image fills the entire Card
             AsyncImage(
                 model = recipe.imageUrl,
@@ -73,7 +74,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomStart)
-                    .background(Color.Black.copy(alpha = 5f))
+                    .background(PrimaryColor)
                     .padding(8.dp)
             ) {
                 Text(

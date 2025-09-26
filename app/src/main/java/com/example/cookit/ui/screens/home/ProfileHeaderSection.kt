@@ -31,6 +31,8 @@ import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.UserProfile
 import com.example.cookit.ui.composables.CookitActionButton
+import com.example.cookit.ui.theme.PrimaryColor
+import com.example.cookit.ui.theme.SecondaryColor
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.User
@@ -119,8 +121,8 @@ fun AvatarView(url: String) {
                 2.dp,
                 Brush.linearGradient(
                     listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.secondary
+                        PrimaryColor,
+                        SecondaryColor
                     )
                 ),
                 CircleShape
