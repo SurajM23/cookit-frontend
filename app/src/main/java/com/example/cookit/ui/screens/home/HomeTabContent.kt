@@ -43,6 +43,14 @@ import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 
 @Composable
@@ -75,108 +83,149 @@ fun HomeTabContent(
     LaunchedEffect(listState, feedState) {
         snapshotFlow {
             listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size
-        }.collect { lastVisible ->
-            val total = listState.layoutInfo.totalItemsCount
-            val totalPages =
-                if (feedState is ApiResult.Success) (feedState as ApiResult.Success<RecipeFeedResponse>).data.totalPages
-                else Int.MAX_VALUE
+        }.distinctUntilChanged()
+            .collect { lastVisible ->
+                val total = listState.layoutInfo.totalItemsCount
+                val totalPages =
+                    if (feedState is ApiResult.Success) (feedState as ApiResult.Success<RecipeFeedResponse>).data.totalPages
+                    else Int.MAX_VALUE
 
-            if (!endReached && !isLoadingMore && lastVisible >= total - 3 && currentPage < totalPages) {
-                isLoadingMore = true
-                currentPage++
-                homeViewModel.getRecipeFeed(page = currentPage)
-                if (currentPage >= totalPages) endReached = true
-                isLoadingMore = false
+                if (!endReached && !isLoadingMore && lastVisible >= total - 3 && currentPage < totalPages) {
+                    isLoadingMore = true
+                    currentPage++
+                    homeViewModel.getRecipeFeed(page = currentPage)
+                    if (currentPage >= totalPages) endReached = true
+                    isLoadingMore = false
+                }
             }
-        }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = {
-                currentPage = 1
-                endReached = false
-                homeViewModel.getRecipeFeed(page = 1)
-                homeViewModel.getUserSuggestions()
-            }
-        ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(4.dp, 12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Suggestions Row
-                item {
-                    ShowUserSuggestionsRow(navController, suggestionsState)
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = "Home", style = MaterialTheme.typography.titleLarge) },
+                actions = {
+                    IconButton(onClick = {
+                        // quick refresh action
+                        currentPage = 1
+                        endReached = false
+                        homeViewModel.getRecipeFeed(page = 1)
+                        homeViewModel.getUserSuggestions()
+                    }) {
+                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Refresh")
+                    }
                 }
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = {
+                    currentPage = 1
+                    endReached = false
+                    homeViewModel.getRecipeFeed(page = 1)
+                    homeViewModel.getUserSuggestions()
+                }
+            ) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(4.dp, 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Suggestions Row
+                    item {
+                        SuggestionsSectionHeader()
+                        ShowUserSuggestionsRow(navController, suggestionsState)
+                    }
 
-                // Feed items
-                when (feedState) {
-                    is ApiResult.Success -> {
-                        val recipes =
-                            (feedState as ApiResult.Success<RecipeFeedResponse>).data.recipes
+                    // Feed items
+                    when (feedState) {
+                        is ApiResult.Success -> {
+                            val recipes =
+                                (feedState as ApiResult.Success<RecipeFeedResponse>).data.recipes
 
-                        items(recipes) { recipe ->
-                            RecipeCard(recipe) {
-                                navController.navigate(
-                                    NavigationConstants.USER_RECIPE_ROUTE.replace(
-                                        "{recipeId}", recipe._id
+                            items(recipes) { recipe ->
+                                RecipeCard(recipe) {
+                                    navController.navigate(
+                                        NavigationConstants.USER_RECIPE_ROUTE.replace(
+                                            "{recipeId}", recipe._id
+                                        )
                                     )
+                                }
+                            }
+
+                            // Loader for pagination
+                            if (isLoadingMore && currentPage > 1) {
+                                item {
+                                    Box(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) { CircularProgressIndicator() }
+                                }
+                            }
+                        }
+
+                        is ApiResult.Error -> {
+                            item {
+                                ErrorBox(
+                                    message = (feedState as ApiResult.Error).message,
+                                    onUnauthorized = {
+                                        navController.navigate(NavigationConstants.LOGIN_SCREEN) {
+                                            popUpTo(NavigationConstants.HOME_SCREEN) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    },
+                                    onRetry = {
+                                        homeViewModel.getRecipeFeed(page = currentPage)
+                                    }
                                 )
                             }
                         }
 
-                        // Loader for pagination
-                        if (isLoadingMore && currentPage > 1) {
+                        is ApiResult.Loading -> {
                             item {
                                 Box(
-                                    Modifier
+                                    modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
+                                        .padding(vertical = 32.dp),
                                     contentAlignment = Alignment.Center
-                                ) { CircularProgressIndicator() }
-                            }
-                        }
-                    }
-
-                    is ApiResult.Error -> {
-                        item {
-                            ErrorBox(
-                                message = (feedState as ApiResult.Error).message,
-                                onUnauthorized = {
-                                    navController.navigate(NavigationConstants.LOGIN_SCREEN) {
-                                        popUpTo(NavigationConstants.HOME_SCREEN) {
-                                            inclusive = true
-                                        }
-                                    }
+                                ) {
+                                    CircularProgressIndicator(color = PrimaryColor)
                                 }
-                            )
-                        }
-                    }
-
-                    is ApiResult.Loading -> {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 32.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = PrimaryColor)
                             }
                         }
-                    }
 
-                    else -> Unit
+                        else -> Unit
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SuggestionsSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = "Suggestions",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
@@ -229,14 +278,19 @@ fun ShowUserSuggestionsRow(
 }
 
 @Composable
-fun ErrorBox(message: String, onUnauthorized: () -> Unit) {
-    Box(
+fun ErrorBox(message: String, onUnauthorized: () -> Unit, onRetry: (() -> Unit)? = null) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 32.dp),
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = message, color = MaterialTheme.colorScheme.error)
+        if (onRetry != null) {
+            androidx.compose.material3.TextButton(onClick = { onRetry() }) {
+                Text("Retry")
+            }
+        }
     }
 
     if (message.contains("Unauthorized", ignoreCase = true)) {
