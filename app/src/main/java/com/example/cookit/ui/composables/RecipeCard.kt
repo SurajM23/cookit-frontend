@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
@@ -22,8 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.cookit.model.Recipe
@@ -35,23 +38,38 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
         onClick = { onClick() },
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp), // Card height is your fixed height
-        elevation = CardDefaults.cardElevation(8.dp)
+            .height(220.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize().background(PrimaryColor)) {
-            // Recipe Image fills the entire Card
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Image
             AsyncImage(
                 model = recipe.imageUrl,
                 contentDescription = recipe.title,
-                modifier = Modifier.matchParentSize(), // Fill both width and height
-                contentScale = ContentScale.Crop // Crop image if aspect ratio does not match
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop
             )
-            // Likes count badge at top right
+
+            // Gradient at bottom for readability
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.65f)),
+                            startY = 0f,
+                            endY = Float.POSITIVE_INFINITY
+                        )
+                    )
+            )
+
+            // Likes badge
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
+                    .background(Color.Black.copy(alpha = 0.45f), shape = CircleShape)
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -65,33 +83,40 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                     Text(
                         text = recipe.likeCount.toString(),
                         color = Color.White,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
-            // Text overlay at bottom of image
-            Box(
+
+            // Bottom overlay: title and meta
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomStart)
-                    .background(PrimaryColor)
-                    .padding(8.dp)
+                    .padding(12.dp)
             ) {
                 Text(
                     recipe.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "By ${'$'}{recipe.author.name}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "· ${'$'}{recipe.cookTime} min",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
             }
-        }
-        // Recipe details overlaid at bottom, optionally move to overlay if you want
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Text("By: ${recipe.author.name}", style = MaterialTheme.typography.bodySmall)
-            Text("Cook time: ${recipe.cookTime} min", style = MaterialTheme.typography.bodySmall)
         }
     }
 }
