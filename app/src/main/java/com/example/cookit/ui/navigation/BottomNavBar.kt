@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +26,17 @@ fun BottomNavBar(
     selectedIndex: Int,
     onItemSelected: (Int) -> Unit
 ) {
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(65.dp)
-            .shadow(elevation = 20.dp)
-            .background(PrimaryColor)
-            .padding(top = 2.dp)
+    Surface(
+        tonalElevation = 3.dp,
+        shadowElevation = 8.dp,
+        color = MaterialTheme.colorScheme.primary,
     ) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(65.dp)
+                .padding(top = 2.dp)
+        ) {
         val baseIconSize = if (maxWidth < 380.dp) 24.dp else 28.dp
         val baseTextSize = if (maxWidth < 380.dp) 9.sp else 10.sp
         val selectedIconSizeIncrease = 4.dp
@@ -74,6 +79,7 @@ fun BottomNavBar(
                     )
                 }
             }
+        }
         }
     }
 }

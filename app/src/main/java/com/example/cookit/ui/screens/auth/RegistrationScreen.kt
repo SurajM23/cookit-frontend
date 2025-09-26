@@ -1,3 +1,5 @@
+package com.example.cookit.ui.screens.auth
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -64,7 +66,7 @@ fun RegistrationScreen(
                 PrefManager.saveUserName(uiState.authResponse.user.name)
                 PrefManager.saveUserId(uiState.authResponse.user.id)
                 PrefManager.saveUserEmail(uiState.authResponse.user.email)
-                onRegistrationSuccess
+                onRegistrationSuccess()
             }
 
             is AuthUiState.Error -> {
@@ -192,7 +194,7 @@ fun RegistrationScreen(
         if (uiState is AuthUiState.Error) {
             Text(
                 text = uiState.message,
-                color = Color.Red,
+                color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall
             )
         }
