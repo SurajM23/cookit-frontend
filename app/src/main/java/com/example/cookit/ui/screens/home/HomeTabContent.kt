@@ -31,8 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.RecipeFeedResponse
 import com.example.cookit.model.UserSuggestion
@@ -43,13 +41,6 @@ import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 
@@ -100,29 +91,11 @@ fun HomeTabContent(
             }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "Home", style = MaterialTheme.typography.titleLarge) },
-                actions = {
-                    IconButton(onClick = {
-                        // quick refresh action
-                        currentPage = 1
-                        endReached = false
-                        homeViewModel.getRecipeFeed(page = 1)
-                        homeViewModel.getUserSuggestions()
-                    }) {
-                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Refresh")
-                    }
-                }
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(8.dp)
                 .background(MaterialTheme.colorScheme.background)
         ) {
             SwipeRefresh(
@@ -211,7 +184,6 @@ fun HomeTabContent(
                 }
             }
         }
-    }
 }
 
 @Composable

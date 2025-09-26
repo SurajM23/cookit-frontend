@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookit.ui.composables.BottomNavItemComposable
@@ -29,13 +27,14 @@ fun BottomNavBar(
     Surface(
         tonalElevation = 3.dp,
         shadowElevation = 8.dp,
-        color = MaterialTheme.colorScheme.primary,
+        color = PrimaryColor,
     ) {
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(65.dp)
                 .padding(top = 2.dp)
+                .background(PrimaryColor)
         ) {
         val baseIconSize = if (maxWidth < 380.dp) 24.dp else 28.dp
         val baseTextSize = if (maxWidth < 380.dp) 9.sp else 10.sp

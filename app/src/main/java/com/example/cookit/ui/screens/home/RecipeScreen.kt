@@ -1,7 +1,5 @@
 package com.example.cookit.ui.screens.home
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +41,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,13 +53,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cookit.model.ApiResult
-import com.example.cookit.model.Recipe
 import com.example.cookit.model.RecipeResponse
-import com.example.cookit.ui.theme.BackgroundColor
-import com.example.cookit.ui.theme.Black
 import com.example.cookit.ui.theme.PrimaryColor
-import com.example.cookit.ui.theme.SecondaryColor
-import com.example.cookit.ui.theme.TextPrimary
+import com.example.cookit.ui.theme.WarningOrange
 import com.example.cookit.ui.theme.White
 import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.HomeViewModel
@@ -232,7 +225,7 @@ fun RecipeScreen(
                                                 },
                                                 shape = RoundedCornerShape(50),
                                                 colors = CardDefaults.cardColors(
-                                                    containerColor = MaterialTheme.colorScheme.primary
+                                                    containerColor = PrimaryColor
                                                 )
                                             ) {
                                                 Row(
@@ -295,7 +288,7 @@ fun RecipeScreen(
                                         "Ingredients",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = PrimaryColor
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -304,7 +297,7 @@ fun RecipeScreen(
                                                 onClick = {},
                                                 label = { Text(ingredient) },
                                                 colors = AssistChipDefaults.assistChipColors(
-                                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                                    containerColor = WarningOrange,
                                                     labelColor = MaterialTheme.colorScheme.onSecondaryContainer
                                                 ),
                                                 modifier = Modifier.height(36.dp)
@@ -319,7 +312,7 @@ fun RecipeScreen(
                                         "Steps",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = PrimaryColor
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     Column {
@@ -331,12 +324,17 @@ fun RecipeScreen(
                                                 Surface(
                                                     shape = CircleShape,
                                                     color = MaterialTheme.colorScheme.primary,
-                                                    modifier = Modifier.size(28.dp)
+                                                    modifier = Modifier
+                                                        .size(28.dp)
+                                                        .background(PrimaryColor)
                                                 ) {
-                                                    Box(contentAlignment = Alignment.Center) {
+                                                    Box(
+                                                        contentAlignment = Alignment.Center,
+                                                        modifier = Modifier.background(PrimaryColor)
+                                                    ) {
                                                         Text(
                                                             "${index + 1}",
-                                                            color = MaterialTheme.colorScheme.onPrimary,
+                                                            color = White,
                                                             fontWeight = FontWeight.Bold
                                                         )
                                                     }
