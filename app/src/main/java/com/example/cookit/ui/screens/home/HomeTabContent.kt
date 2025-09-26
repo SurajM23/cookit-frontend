@@ -51,6 +51,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import kotlinx.coroutines.flow.distinctUntilChanged
+import com.example.cookit.ui.composables.ScreenScaffold
+import com.example.cookit.ui.composables.ErrorBox
+import com.example.cookit.ui.theme.Spacing
+import com.example.cookit.utils.toRecipe
+import com.example.cookit.utils.toUserProfile
 
 
 @Composable
@@ -100,24 +105,15 @@ fun HomeTabContent(
             }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "Home", style = MaterialTheme.typography.titleLarge) },
-                actions = {
-                    IconButton(onClick = {
-                        // quick refresh action
-                        currentPage = 1
-                        endReached = false
-                        homeViewModel.getRecipeFeed(page = 1)
-                        homeViewModel.getUserSuggestions()
-                    }) {
-                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Refresh")
-                    }
-                }
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
+    ScreenScaffold(
+        title = "Home",
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            currentPage = 1
+            endReached = false
+            homeViewModel.getRecipeFeed(page = 1)
+            homeViewModel.getUserSuggestions()
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -137,8 +133,8 @@ fun HomeTabContent(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(4.dp, 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    contentPadding = PaddingValues(Spacing.s, Spacing.l),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.m)
                 ) {
                     // Suggestions Row
                     item {
@@ -154,11 +150,7 @@ fun HomeTabContent(
 
                             items(recipes) { recipe ->
                                 RecipeCard(recipe) {
-                                    navController.navigate(
-                                        NavigationConstants.USER_RECIPE_ROUTE.replace(
-                                            "{recipeId}", recipe._id
-                                        )
-                                    )
+                                    navController.toRecipe(recipe._id)
                                 }
                             }
 
@@ -168,7 +160,7 @@ fun HomeTabContent(
                                     Box(
                                         Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp),
+                                            .padding(Spacing.l),
                                         contentAlignment = Alignment.Center
                                     ) { CircularProgressIndicator() }
                                 }
@@ -219,7 +211,7 @@ private fun SuggestionsSectionHeader() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .padding(horizontal = Spacing.m, vertical = Spacing.s)
     ) {
         Text(
             text = "Suggestions",
@@ -251,13 +243,11 @@ fun ShowUserSuggestionsRow(
                     Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.l)
                 ) {
                     items(users) { user ->
                         UserSuggestionStoryCard(user) {
-                            navController.navigate(
-                                NavigationConstants.USER_PROFILE_ROUTE.replace("{userId}", user._id)
-                            )
+                            navController.toUserProfile(user._id)
                         }
                     }
                 }

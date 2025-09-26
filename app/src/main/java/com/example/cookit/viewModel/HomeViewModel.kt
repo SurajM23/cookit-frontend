@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.cookit.data.network.toApiResult
 
 class HomeViewModel(
     private val repository: HomeRepository
@@ -40,12 +41,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val response = repository.getUserSuggestions()
-                if (response.isSuccessful && response.body() != null) {
-                    _userSuggestions.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _userSuggestions.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _userSuggestions.value = response.toApiResult()
             } catch (e: Exception) {
                 _userSuggestions.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -66,13 +62,7 @@ class HomeViewModel(
                 } else {
                     repository.unfollowUser(userId)
                 }
-
-                if (response.isSuccessful && response.body() != null) {
-                    _followResponse.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _followResponse.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _followResponse.value = response.toApiResult()
             } catch (e: Exception) {
                 _followResponse.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -88,14 +78,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val response = repository.getRecipeFeed(page)
-                if (response.isSuccessful && response.body() != null) {
-                    _feedState.value = ApiResult.Success(response.body()!!)
-                } else if (response.code() == 401) {
-                    _feedState.value = ApiResult.Error("Unauthorized")
-                } else {
-                    _feedState.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _feedState.value = response.toApiResult()
             } catch (e: Exception) {
                 _feedState.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -122,12 +105,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val response = repository.getUserProfile(userId)
-                if (response.isSuccessful && response.body() != null) {
-                    _profileState.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _profileState.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _profileState.value = response.toApiResult()
             } catch (e: Exception) {
                 _profileState.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -139,12 +117,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val response = repository.getUserRecipes(userId, page)
-                if (response.isSuccessful && response.body() != null) {
-                    _feedState2.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _feedState2.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _feedState2.value = response.toApiResult()
             } catch (e: Exception) {
                 _feedState2.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -158,12 +131,7 @@ class HomeViewModel(
             try {
                 _recipeState.value = ApiResult.Loading
                 val response = repository.getRecipeById(recipeId)
-                if (response.isSuccessful && response.body() != null) {
-                    _recipeState.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _recipeState.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _recipeState.value = response.toApiResult()
             } catch (e: Exception) {
                 _recipeState.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -180,12 +148,7 @@ class HomeViewModel(
             try {
                 _recipeLikedResponse.value = ApiResult.Loading
                 val response = repository.getRecipeLiked(recipeId)
-                if (response.isSuccessful && response.body() != null) {
-                    _recipeLikedResponse.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _recipeLikedResponse.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _recipeLikedResponse.value = response.toApiResult()
             } catch (e: Exception) {
                 _recipeLikedResponse.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -199,12 +162,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val response = repository.getAllRecipe(page)
-                if (response.isSuccessful && response.body() != null) {
-                    _allRecipeState.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _allRecipeState.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _allRecipeState.value = response.toApiResult()
             } catch (e: Exception) {
                 _allRecipeState.value = ApiResult.Error(e.message ?: "Network error")
             }
@@ -221,12 +179,7 @@ class HomeViewModel(
             try {
                 _createRecipeResponse.value = ApiResult.Loading
                 val response = repository.createRecipePost(createRecipeRequest)
-                if (response.isSuccessful && response.body() != null) {
-                    _createRecipeResponse.value = ApiResult.Success(response.body()!!)
-                } else {
-                    _createRecipeResponse.value =
-                        ApiResult.Error(response.message() ?: "Unknown error")
-                }
+                _createRecipeResponse.value = response.toApiResult()
             } catch (e: Exception) {
                 _createRecipeResponse.value = ApiResult.Error(e.message ?: "Network error")
             }
