@@ -132,7 +132,7 @@ fun ExploreScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(White)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 items(filteredRecipes, key = { it._id }) { recipe ->
                     RecipeGridItem2(
@@ -227,10 +227,10 @@ fun RecipeGridItem2(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(16.dp))
-            .background(PrimaryColor)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryColor),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -247,7 +247,7 @@ fun RecipeGridItem2(
             Text(
                 text = recipe.title,
                 style = MaterialTheme.typography.titleSmall,
-                color = White,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier

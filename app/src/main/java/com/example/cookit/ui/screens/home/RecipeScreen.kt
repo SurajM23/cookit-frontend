@@ -1,6 +1,5 @@
 package com.example.cookit.ui.screens.home
 
-import android.R
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
@@ -123,7 +122,7 @@ fun RecipeScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(PrimaryColor)
+                            .background(MaterialTheme.colorScheme.background)
                     ) {
                         // Top image
                         item {
@@ -151,12 +150,12 @@ fun RecipeScreen(
                                         .padding(16.dp)
                                         .size(50.dp)
                                         .clip(CircleShape)
-                                        .background(BackgroundColor)
+                                        .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Icon(
                                         imageVector = if (isLiked.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                                         contentDescription = "Like",
-                                        tint = if (isLiked.value) Color.Red else TextPrimary,
+                                        tint = if (isLiked.value) Color.Red else MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.size(28.dp)
                                     )
                                 }
@@ -170,12 +169,12 @@ fun RecipeScreen(
                                     .fillMaxWidth()
                                     .padding(8.dp),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = BackgroundColor),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                 elevation = CardDefaults.cardElevation(0.dp)
                             ) {
                                 Column(Modifier
                                     .padding(16.dp)
-                                    .background(BackgroundColor)) {
+                                    .background(MaterialTheme.colorScheme.surface)) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -191,7 +190,7 @@ fun RecipeScreen(
                                                 style = MaterialTheme.typography.headlineSmall.copy(
                                                     fontWeight = FontWeight.Bold
                                                 ),
-                                                color = PrimaryColor,
+                                                color = MaterialTheme.colorScheme.onSurface,
                                                 maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis, // prevents overlap
                                                 modifier = Modifier.weight(1f)
@@ -204,13 +203,13 @@ fun RecipeScreen(
                                                 Icon(
                                                     imageVector = Icons.Default.DateRange,
                                                     contentDescription = null,
-                                                    tint = PrimaryColor,
+                                                    tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(18.dp)
                                                 )
                                                 Text(
                                                     text = "${recipe.cookTime} min",
                                                     fontWeight = FontWeight.SemiBold,
-                                                    color = TextPrimary
+                                                    color = MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
                                         }
@@ -233,7 +232,7 @@ fun RecipeScreen(
                                                 },
                                                 shape = RoundedCornerShape(50),
                                                 colors = CardDefaults.cardColors(
-                                                    containerColor = PrimaryColor
+                                                    containerColor = MaterialTheme.colorScheme.primary
                                                 )
                                             ) {
                                                 Row(
@@ -254,7 +253,7 @@ fun RecipeScreen(
                                                     Text(
                                                         text = recipe.author.name,
                                                         fontWeight = FontWeight.Medium,
-                                                        color = White
+                                                        color = MaterialTheme.colorScheme.onPrimary
                                                     )
                                                 }
                                             }
@@ -267,13 +266,13 @@ fun RecipeScreen(
                                                 Icon(
                                                     imageVector = if (isLiked.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                                                     contentDescription = null,
-                                                    tint = if (isLiked.value) Color.Red else TextPrimary,
+                                                    tint = if (isLiked.value) Color.Red else MaterialTheme.colorScheme.onSurface,
                                                     modifier = Modifier.size(20.dp)
                                                 )
                                                 Text(
                                                     text = "${likeCount.value} likes",
                                                     style = MaterialTheme.typography.bodyMedium,
-                                                    color = TextPrimary
+                                                    color = MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
                                         }
@@ -286,7 +285,7 @@ fun RecipeScreen(
                                     Text(
                                         recipe.description,
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = TextPrimary
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
 
                                     Spacer(Modifier.height(18.dp))
@@ -296,7 +295,7 @@ fun RecipeScreen(
                                         "Ingredients",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        color = PrimaryColor
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -305,7 +304,8 @@ fun RecipeScreen(
                                                 onClick = {},
                                                 label = { Text(ingredient) },
                                                 colors = AssistChipDefaults.assistChipColors(
-                                                    containerColor = PrimaryColor
+                                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
                                                 ),
                                                 modifier = Modifier.height(36.dp)
                                             )
@@ -319,7 +319,7 @@ fun RecipeScreen(
                                         "Steps",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
-                                        color = PrimaryColor
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     Column {
@@ -330,13 +330,13 @@ fun RecipeScreen(
                                             ) {
                                                 Surface(
                                                     shape = CircleShape,
-                                                    color = PrimaryColor,
+                                                    color = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(28.dp)
                                                 ) {
                                                     Box(contentAlignment = Alignment.Center) {
                                                         Text(
                                                             "${index + 1}",
-                                                            color = White,
+                                                            color = MaterialTheme.colorScheme.onPrimary,
                                                             fontWeight = FontWeight.Bold
                                                         )
                                                     }
@@ -345,7 +345,7 @@ fun RecipeScreen(
                                                 Text(
                                                     step,
                                                     style = MaterialTheme.typography.bodyLarge,
-                                                    color = TextPrimary
+                                                    color = MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
                                         }
