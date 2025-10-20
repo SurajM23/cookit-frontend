@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.cookit.model.Recipe
-import com.example.cookit.ui.theme.PrimaryColor
 
 @Composable
 fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
@@ -105,13 +104,13 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                 Spacer(Modifier.height(2.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "By ${'$'}{recipe.author.name}",
+                        text = "By ${recipe.author.name}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.9f)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "· ${'$'}{recipe.cookTime} min",
+                        text = "· ${recipe.cookTime} min",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.9f)
                     )

@@ -13,7 +13,6 @@ import com.example.cookit.model.UserSuggestion
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -83,6 +82,12 @@ interface ApiService {
     @GET("recipes/")
     suspend fun getAllRecipe(
         @Query("page") page: Int
+    ): Response<AllRecipeResponse>
+
+
+    @GET("recipes/{userId}/liked")
+    suspend fun getUserLikedRecipe(
+        @Path("userId") userId: String,
     ): Response<AllRecipeResponse>
 
     @POST("recipes/add")

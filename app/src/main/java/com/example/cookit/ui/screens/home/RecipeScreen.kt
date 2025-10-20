@@ -87,7 +87,7 @@ fun RecipeScreen(
                 },
             )
         }
-    ) { paddingValues ->
+    ) { paddingValues -> 
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -165,9 +165,11 @@ fun RecipeScreen(
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                 elevation = CardDefaults.cardElevation(0.dp)
                             ) {
-                                Column(Modifier
-                                    .padding(16.dp)
-                                    .background(MaterialTheme.colorScheme.surface)) {
+                                Column(
+                                    Modifier
+                                        .padding(16.dp)
+                                        .background(MaterialTheme.colorScheme.surface)
+                                ) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalArrangement = Arrangement.spacedBy(8.dp)

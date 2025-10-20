@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.cookit.ui.navigation.BottomNavBar
 import com.example.cookit.utils.NavigationConstants
+import com.example.cookit.utils.PrefManager
 import com.example.cookit.viewModel.HomeViewModel
 
 @Composable
@@ -41,7 +42,11 @@ fun HomeScreen(
             when (selectedIndex) {
                 0 -> HomeTabContent(navController,  homeViewModel)
                 1 -> ExploreScreen(navController,homeViewModel)
-                3 -> FavoritesTabContent()
+                3 -> FavoritesTabContent(
+                    navController = navController,
+                    viewModel = homeViewModel,
+                    userId = PrefManager.getUserId() ?: ""
+                )
                 4 -> ProfileContent(navController,viewModel = homeViewModel)
                 else -> HomeTabContent(navController,homeViewModel)
             }

@@ -54,6 +54,10 @@ class HomeRepository(private val api: ApiService) {
         return api.getAllRecipe(page)
     }
 
+    suspend fun getUserLikedRecipe(userId: String): Response<AllRecipeResponse> {
+        return api.getUserLikedRecipe(userId)
+    }
+
     suspend fun createRecipePost(createRecipeRequest: CreateRecipeRequest): Response<SimpleMessageResponse> {
         return api.createRecipePost(createRecipeRequest)
     }

@@ -233,5 +233,24 @@ class HomeViewModel(
         }
     }
 
+    private val _userLikedRecipeState =
+        MutableStateFlow<ApiResult<AllRecipeResponse>>(ApiResult.Loading)
+    val userLikedRecipeState: StateFlow<ApiResult<AllRecipeResponse>> = _userLikedRecipeState
+
+    fun getUserLikedRecipe(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getUserLikedRecipe(userId)
+                if (response.isSuccessful && response.body() != null) {
+                    _userLikedRecipeState.value = ApiResult.Success(response.body()!!)
+                } else {
+                    _userLikedRecipeState.value =
+                        ApiResult.Error(response.message() ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _userLikedRecipeState.value = ApiResult.Error(e.message ?: "Network error")
+            }
+        }
+    }
 
 }
