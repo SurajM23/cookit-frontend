@@ -186,15 +186,49 @@ API calls are made using Retrofit with:
 - R8 for code optimization
 - Resource shrinking for APK size reduction
 
+## 📚 Additional Documentation
+
+For more detailed information, please refer to:
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed architecture decisions and design patterns
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guidelines for contributing to the project
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and changes
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Comprehensive project overview
+
+## 🛠️ Development Scripts
+
+Helper scripts are available in the `scripts/` directory:
+
+```bash
+# Clean build
+./scripts/clean-build.sh
+
+# Run tests
+./scripts/run-tests.sh
+
+# Check code quality
+./scripts/check-code.sh
+```
+
 ## 📝 License
 
 [Add your license here]
 
 ## 👥 Authors
 
-- SurajM23
+- [SurajM23](https://github.com/SurajM23) - Project Owner
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+- Code style guidelines
+- Development workflow
+- Pull request process
+- Commit message conventions
 
 ## 🙏 Acknowledgments
 
 - Backend API provided by CookIT Backend
 - Icons from Material Design and Font Awesome
+- Built with Android Jetpack libraries
+- Inspired by modern Android development practices
