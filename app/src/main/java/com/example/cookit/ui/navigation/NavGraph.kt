@@ -3,14 +3,10 @@ package com.example.cookit.ui.navigation
 import com.example.cookit.ui.screens.auth.RegistrationScreen
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cookit.data.network.AuthRepository
-import com.example.cookit.data.network.HomeRepository
-import com.example.cookit.data.network.RetrofitInstance
 import com.example.cookit.ui.screens.addPost.AddRecipePostScreen
 import com.example.cookit.ui.screens.auth.LoginScreen
 import com.example.cookit.ui.screens.auth.SplashScreen
@@ -20,20 +16,14 @@ import com.example.cookit.ui.screens.home.RecipeScreen
 import com.example.cookit.ui.screens.home.UserProfileScreen
 import com.example.cookit.utils.NavigationConstants
 import com.example.cookit.viewModel.AuthViewModel
-import com.example.cookit.viewModel.AuthViewModelFactory
 import com.example.cookit.viewModel.HomeViewModel
-import com.example.cookit.viewModel.HomeViewModelFactory
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
-    val context = LocalContext.current
-
-    val authViewModel: AuthViewModel =
-        viewModel(factory = AuthViewModelFactory(AuthRepository(RetrofitInstance.api)))
-    val homeViewModel: HomeViewModel =
-        viewModel(factory = HomeViewModelFactory(HomeRepository(RetrofitInstance.api)))
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,

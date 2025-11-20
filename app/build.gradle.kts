@@ -22,11 +22,21 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isMinifyEnabled = false
+        }
+    }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
     compileOptions {
@@ -64,6 +74,7 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.okhttp.logging)
     implementation(libs.androidx.material)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.lifecycle.runtime.ktx.v261)
