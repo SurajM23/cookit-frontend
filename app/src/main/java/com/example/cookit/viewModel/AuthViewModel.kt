@@ -6,13 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookit.model.RegisterRequest
-import com.example.cookit.data.network.AuthRepository
+import com.example.cookit.domain.repository.AuthRepository
 import com.example.cookit.model.LoginRequest
 import com.example.cookit.model.AuthUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 

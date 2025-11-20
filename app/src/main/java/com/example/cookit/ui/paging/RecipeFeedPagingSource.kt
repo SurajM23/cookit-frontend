@@ -2,8 +2,7 @@ package com.example.cookit.ui.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.cookit.data.network.ApiService
-import com.example.cookit.data.network.HomeRepository
+import com.example.cookit.domain.repository.HomeRepository
 import com.example.cookit.model.Recipe
 
 class RecipeFeedPagingSource(private val repository: HomeRepository) : PagingSource<Int, Recipe>() {

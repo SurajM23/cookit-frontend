@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.cookit.data.network.HomeRepository
+import com.example.cookit.domain.repository.HomeRepository
 import com.example.cookit.model.AllRecipeResponse
 import com.example.cookit.model.ApiResult
 import com.example.cookit.model.CreateRecipeRequest
@@ -18,12 +18,15 @@ import com.example.cookit.model.UserProfile
 import com.example.cookit.model.UserSuggestion
 import com.example.cookit.ui.paging.RecipeFeedPagingSource
 import com.example.cookit.ui.paging.getRecipeFeedPager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
 ) : ViewModel() {
 

@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
+/**
+ * SharedPreferences manager for storing user session data
+ * Handles authentication tokens and user information
+ */
 object PrefManager {
 
     private const val PREF_NAME = "cookit_prefs"
@@ -14,13 +18,19 @@ object PrefManager {
 
     private lateinit var prefs: SharedPreferences
 
+    /**
+     * Initialize SharedPreferences
+     * Must be called in Application.onCreate()
+     */
     fun init(context: Context) {
         prefs = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
+    // Authentication Token
     fun saveToken(token: String) = prefs.edit { putString(KEY_TOKEN, token) }
     fun getToken(): String? = prefs.getString(KEY_TOKEN, null)
 
+    // User Information
     fun saveUserName(name: String) = prefs.edit { putString(KEY_USER_NAME, name) }
     fun getUserName(): String? = prefs.getString(KEY_USER_NAME, null)
 
@@ -30,5 +40,8 @@ object PrefManager {
     fun saveUserEmail(email: String) = prefs.edit { putString(KEY_USER_EMAIL, email) }
     fun getUserEmail(): String? = prefs.getString(KEY_USER_EMAIL, null)
 
+    /**
+     * Clear all stored preferences (for logout)
+     */
     fun clearAll() = prefs.edit { clear() }
 }
