@@ -65,7 +65,6 @@ fun BottomNavBar(
                         )
                     }
                 } else {
-                    // Standard bottom nav item
                     BottomNavItemComposable(
                         icon = item.icon,
                         label = item.label,
